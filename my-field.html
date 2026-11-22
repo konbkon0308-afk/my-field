@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>MY FIELD - Chaos Party Card Battle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap"></noscript>
+<style>
+:root{--panel-bg:rgba(255,255,255,.96);--pink:#f472b6;--pink-dark:#db2777;--purple:#a855f7;--gold:#f59e0b;--text-main:#3b2d4a;--text-sub:#7c6a92}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;width:100%;height:100dvh;overflow:hidden;font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Rounded Mplus 1c",sans-serif;background:radial-gradient(circle at 18% 15%,#ffd6e7 0%,transparent 45%),radial-gradient(circle at 82% 85%,#ddd6fe 0%,transparent 45%),linear-gradient(135deg,#fff5f9 0%,#f5f0ff 50%,#eef9ff 100%);color:var(--text-main)}
+.screen{display:none;width:100%;height:100dvh;overflow:hidden}
+.screen.active{display:flex}
+#menuScreen{align-items:center;justify-content:center;padding:14px}
+.menu-card{width:100%;max-width:420px;background:rgba(255,255,255,.97);border:3px solid #fbcfe8;border-radius:28px;padding:22px 18px;box-shadow:0 14px 36px rgba(219,39,119,.14),0 5px 0 #f9a8d4;text-align:center;max-height:100%;overflow-y:auto}
+.title-badge{display:inline-block;font-size:.68rem;font-weight:800;padding:3px 10px;border-radius:999px;background:#fce7f3;color:var(--pink-dark);margin-bottom:4px}
+.game-logo{font-size:2rem;font-weight:900;margin:0;letter-spacing:.05em;background:linear-gradient(120deg,#ec4899,#8b5cf6,#06b6d4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.form-group{text-align:left;margin-top:14px}
+.form-label{display:block;font-size:.78rem;font-weight:800;color:var(--text-main);margin-bottom:5px}
+.cute-input{width:100%;background:#fff9fc;border:2px solid #f9a8d4;border-radius:14px;padding:9px 12px;font-family:inherit;font-size:.95rem;font-weight:700;color:var(--text-main);outline:none}
+.cute-input:focus{border-color:#ec4899;box-shadow:0 0 0 3px rgba(244,114,182,.2)}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.mode-btn{background:#fff;border:2px solid #e9d5ff;border-radius:18px;padding:12px 8px;cursor:pointer;font-family:inherit;color:var(--text-main);box-shadow:0 4px 0 #e9d5ff;display:flex;flex-direction:column;align-items:center;gap:3px}
+.mode-btn:active{transform:translateY(2px)}
+.mode-btn.online{border-color:#fbcfe8;box-shadow:0 4px 0 #fbcfe8}
+.online-box{display:none;margin-top:12px;padding-top:12px;border-top:2px dashed #fbcfe8;text-align:left}
+.online-box.open{display:block}
+.btn{border:none;border-radius:13px;padding:8px 11px;font-family:inherit;font-size:.78rem;font-weight:800;cursor:pointer;color:#fff;background:#a855f7;box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap}
+.btn:active:not(:disabled){transform:translateY(2px)}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.btn-pink{background:linear-gradient(135deg,#f472b6,#ec4899)}
+.btn-purple{background:linear-gradient(135deg,#a855f7,#7e22ce)}
+.btn-gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#451a03}
+.btn-soft{background:#fff;color:var(--text-main);border:2px solid #e9d5ff;box-shadow:none}
+.lobby-status{margin-top:8px;padding:7px 10px;border-radius:12px;background:#fdf2f8;border:1.5px solid #fbcfe8;font-size:.72rem;font-weight:700;color:#9d174d;line-height:1.35}
+#battleScreen{flex-direction:column;align-items:center;justify-content:flex-start;padding:5px 6px}
+.arena-wrapper{width:100%;max-width:480px;height:100%;display:flex;flex-direction:column;justify-content:space-between;gap:5px;overflow:hidden}
+.fighter-bar{flex-shrink:0;background:var(--panel-bg);border:2px solid #e9d5ff;border-radius:15px;padding:5px 9px;box-shadow:0 3px 10px rgba(139,92,246,.08)}
+.fighter-bar.active-turn{border-color:#f472b6;box-shadow:0 0 0 2.5px rgba(244,114,182,.25)}
+.bar-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.fighter-title{display:flex;align-items:center;gap:5px;font-size:.82rem;font-weight:900;min-width:0}
+.fighter-title span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.turn-pill{flex-shrink:0;font-size:.58rem;font-weight:900;padding:1px 6px;border-radius:999px;background:#f472b6;color:#fff}
+.metrics-group{flex-shrink:0;display:flex;align-items:center;gap:6px;font-size:.76rem;font-weight:900}
+.cost-chip{padding:2px 8px;border-radius:999px;background:#fef08a;border:2px solid #f59e0b;color:#78350f;font-weight:900;display:inline-flex;align-items:center;gap:2px}
+.hp-bar-bg{width:100%;height:7px;border-radius:999px;background:#f1f5f9;margin-top:3px;overflow:hidden}
+.hp-bar-val{height:100%;width:100%;background:linear-gradient(90deg,#34d399,#38bdf8);transition:width .28s ease}
+.hp-bar-val.low{background:linear-gradient(90deg,#fb7185,#f97316)}
+.sub-strip{display:flex;align-items:center;justify-content:space-between;margin-top:3px;min-height:16px;gap:4px}
+.buff-list{display:flex;flex-wrap:wrap;gap:3px}
+.buff-badge{font-size:.56rem;font-weight:800;padding:1px 6px;border-radius:999px;background:#f3e8ff;color:#7e22ce}
+.opp-mini-cards{display:flex;gap:3px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;max-width:60%}
+.mini-back{width:14px;height:20px;border-radius:3px;background:linear-gradient(135deg,#f472b6,#a855f7);border:1px solid #fff}
+.center-field{flex:1 1 auto;min-height:0;background:rgba(255,255,255,.84);border:2px solid #fbcfe8;border-radius:18px;padding:5px 8px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.hud-top{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.round-badge{font-size:.64rem;font-weight:900;padding:2px 8px;border-radius:999px;background:#ede9fe;color:#6d28d9}
+.turn-banner{font-size:.96rem;font-weight:900;color:var(--pink-dark);text-align:center;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.75)}
+.last-actor-badge{font-size:.74rem;font-weight:900;color:#4c1d95;background:#fef08a;border:1.5px solid #f59e0b;border-radius:999px;padding:1px 8px;margin-bottom:3px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stage-middle{flex:1;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:0}
+.played-wrap{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.played-box{width:96px;height:118px;border-radius:12px;border:2px dashed #f9a8d4;background:rgba(255,241,247,.7);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--text-sub);text-align:center;padding:3px}
+.played-box.filled{border:none;background:transparent}
+.action-col{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.action-col .btn{padding:7px 6px;font-size:.68rem;border-radius:11px}
+.bottom-zone{flex-shrink:0;display:flex;flex-direction:column;gap:4px;width:100%}
+.hand-scroll-hint{display:flex;justify-content:space-between;align-items:center;padding:0 4px;font-size:.62rem;font-weight:800;color:var(--text-sub)}
+.hand-scroll-outer{position:relative;width:100%;height:224px;padding-top:14px;padding-bottom:8px;overflow-x:scroll;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;scroll-snap-type:x mandatory;scrollbar-width:none;background:radial-gradient(ellipse at 50% 100%,rgba(244,114,182,.22),rgba(255,255,255,.55) 70%);border-radius:18px;border:2px solid #f5d0fe}
+.hand-scroll-outer::-webkit-scrollbar{display:none}
+.hand-row{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:14px;width:max-content;height:100%}
+.cute-card{flex:0 0 124px;width:124px;height:152px;border-radius:14px;padding:5px;background:#fff;border:2.5px solid #e9d5ff;box-shadow:0 4px 10px rgba(139,92,246,.14);display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;position:relative;overflow:hidden;touch-action:pan-x;scroll-snap-align:center;will-change:transform}
+.hand-row .cute-card.is-center{box-shadow:0 0 0 3px #f472b6,0 10px 22px rgba(219,39,119,.35)}
+.cute-card.disabled{opacity:.52;cursor:not-allowed}
+.cute-card.tag-card{border-style:solid;background:linear-gradient(180deg,#fff 0%,#fff1f2 100%)}
+.tag-pill{display:inline-block;font-size:.52rem;font-weight:900;padding:1px 5px;border-radius:6px;background:linear-gradient(135deg,#ec4899,#8b5cf6);color:#fff;margin-right:2px}
+.cute-card.combo-ready{box-shadow:0 0 0 2.5px #fbbf24,0 6px 14px rgba(245,158,11,.35);border-color:#f59e0b}
+.cute-card.rank-SS,.cute-card.treasure-card{background:linear-gradient(160deg,#fffbeb 0%,#fdf2f8 100%);border-color:#fbbf24}
+.cute-card.rank-S{border-color:#f472b6}
+.cute-card.rank-A{border-color:#c084fc}
+.cute-card.rank-B{border-color:#38bdf8}
+.card-top-block{display:flex;flex-direction:column;gap:2px}
+.card-meta-row{display:flex;align-items:center;justify-content:space-between;gap:3px}
+.card-rank-tag{font-size:.54rem;font-weight:900;padding:1px 6px;border-radius:999px;background:#ede9fe;color:#6d28d9}
+.cute-card.rank-SS .card-rank-tag,.cute-card.treasure-card .card-rank-tag{background:#fef08a;color:#92400e}
+.card-cost{min-width:22px;height:17px;padding:0 5px;border-radius:999px;background:#fef08a;border:1.5px solid #f59e0b;color:#92400e;font-size:.6rem;font-weight:900;display:inline-flex;align-items:center;justify-content:center}
+.card-title{font-size:.62rem;font-weight:900;color:var(--text-main);line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
+.card-art{width:100%;height:34px;border-radius:8px;overflow:hidden;border:1px solid #f3e8ff;flex-shrink:0}
+.card-art svg{width:100%;height:100%;display:block}
+.card-desc{background:#faf5ff;border-radius:8px;padding:4px 5px;font-size:.54rem;font-weight:800;line-height:1.24;color:#4c1d95;height:56px;overflow-y:auto;display:flex;align-items:center}
+.played-box .cute-card{flex:none;width:92px;height:114px;padding:4px}
+.played-box .card-title{font-size:.52rem;-webkit-line-clamp:1;line-clamp:1}
+.played-box .card-art{height:24px}
+.played-box .card-desc{height:44px;font-size:.46rem;padding:2px 3px}
+.log-pop{position:fixed;top:42px;right:8px;width:280px;max-width:calc(100vw - 16px);max-height:230px;background:rgba(255,255,255,.98);border:2px solid #f9a8d4;border-radius:16px;padding:9px;z-index:40;display:none;flex-direction:column;box-shadow:0 10px 26px rgba(219,39,119,.18)}
+.log-pop.open{display:flex}
+.log-items{overflow-y:auto;display:flex;flex-direction:column;gap:4px;font-size:.66rem;font-weight:700;margin-top:5px}
+.log-entry{padding:4px 6px;border-radius:7px;background:#fdf2f8;color:#831843}
+.chaos-modal-bg,.modal-bg{position:fixed;inset:0;background:rgba(59,45,74,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:60;padding:14px}
+.chaos-modal-bg.open,.modal-bg.open{display:flex}
+.chaos-card-box,.modal-card{background:#fff;border:3px solid #f9a8d4;border-radius:24px;padding:18px;max-width:440px;width:100%;text-align:center;box-shadow:0 18px 44px rgba(219,39,119,.25)}
+.choice-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:10px;max-height:220px;overflow-y:auto}
+.choice-chip{background:#fdf2f8;border:2px solid #f9a8d4;border-radius:12px;padding:7px 9px;font-family:inherit;font-size:.68rem;font-weight:800;color:#4c1d95;cursor:pointer;text-align:left;max-width:145px}
+.reveal-bg{position:fixed;inset:0;z-index:55;background:rgba(30,18,50,.62);backdrop-filter:blur(3px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px}
+.reveal-bg.open{display:flex}
+.reveal-label{color:#fff;font-weight:900;font-size:1.35rem;letter-spacing:.04em;padding:6px 18px;border-radius:999px;background:linear-gradient(90deg,rgba(236,72,153,.9),rgba(139,92,246,.9));border:2px solid #fbcfe8;box-shadow:0 6px 20px rgba(0,0,0,.5);text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.reveal-actor-name{display:inline-block;font-size:1.65rem;color:#fef08a;text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px;margin:0 4px}
+.reveal-stage{width:240px;height:290px;position:relative;perspective:900px}
+.reveal-stage .cute-card{position:absolute;left:50%;top:50%;flex:none;width:124px;height:152px;transform:translate(-50%,-50%) scale(1.8);box-shadow:0 0 0 4px #fbbf24,0 18px 44px rgba(0,0,0,.5);animation:revealPop .5s cubic-bezier(.2,1.3,.4,1)}
+@keyframes revealPop{from{transform:translate(-50%,-50%) rotateY(95deg) scale(.4);opacity:0}to{transform:translate(-50%,-50%) rotateY(0) scale(1.8);opacity:1}}
+.reveal-effect{max-width:340px;background:rgba(255,255,255,.96);color:#4c1d95;border-radius:16px;padding:9px 14px;font-weight:900;font-size:.9rem;line-height:1.35;text-align:center;animation:revealFade .6s .25s both}
+.reveal-combo{color:#fde047;font-weight:900;font-size:1.05rem;text-shadow:0 2px 8px rgba(0,0,0,.6);min-height:1.2em}
+@keyframes revealFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ===== 3D Card Battle UI Upgrade (Visual / Animation Only) ===== */
+.hand-scroll-outer {
+  perspective: 980px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: auto;
+  transform: translateZ(0);
+  contain: layout style;
+}
+.hand-row {
+  transform-style: preserve-3d;
+  will-change: scroll-position;
+}
+.hand-row .cute-card {
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.hand-row .cute-card.is-center {
+  border-color: #ec4899;
+  box-shadow:
+    0 0 0 3px rgba(244, 114, 182, 0.9),
+    0 0 22px rgba(236, 72, 153, 0.72),
+    0 0 38px rgba(168, 85, 247, 0.45),
+    0 14px 28px rgba(59, 45, 74, 0.28);
+}
+.hand-row .cute-card.is-center::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 15px;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.45), transparent 45%, rgba(251, 191, 36, 0.25));
+  pointer-events: none;
+}
+
+/* カード発動オーバーレイ＆タイプ別フラッシュ演出 */
+.reveal-bg {
+  background: rgba(12, 8, 24, 0.86);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  overflow: hidden;
+}
+.reveal-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.reveal-bg > * {
+  position: relative;
+  z-index: 1;
+}
+.reveal-bg.flash-attack::before {
+  background: radial-gradient(circle at center, rgba(244, 63, 94, 0.78) 0%, rgba(185, 28, 28, 0.42) 55%, transparent 100%);
+  animation: typeFlashRed 0.75s ease-out forwards;
+}
+.reveal-bg.flash-heal::before {
+  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.78) 0%, rgba(5, 150, 105, 0.42) 55%, transparent 100%);
+  animation: typeFlashGreen 0.75s ease-out forwards;
+}
+.reveal-bg.flash-magic::before {
+  background: radial-gradient(circle at center, rgba(168, 85, 247, 0.8) 0%, rgba(109, 40, 217, 0.45) 55%, transparent 100%);
+  animation: typeFlashPurple 0.75s ease-out forwards;
+}
+.reveal-bg.flash-treasure::before {
+  background: radial-gradient(circle at center, rgba(251, 191, 36, 0.85) 0%, rgba(217, 119, 6, 0.48) 55%, transparent 100%);
+  animation: typeFlashGold 0.85s ease-out forwards;
+}
+.reveal-bg.flash-special::before {
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.82) 0%, rgba(139, 92, 246, 0.46) 55%, transparent 100%);
+  animation: typeFlashBluePurple 0.78s ease-out forwards;
+}
+
+.reveal-stage .cute-card.card-3d-spin-in {
+  transform: translate(-50%, -50%) scale(1.8);
+  animation: cardSpinAppear3D 0.68s cubic-bezier(0.18, 1.25, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+.reveal-bg.is-combo .reveal-stage .cute-card.card-3d-spin-in {
+  box-shadow:
+    0 0 0 4px #fde047,
+    0 0 32px rgba(251, 191, 36, 0.95),
+    0 0 60px rgba(244, 63, 94, 0.75),
+    0 22px 48px rgba(0, 0, 0, 0.65);
+  animation: cardSpinCombo3D 0.78s cubic-bezier(0.16, 1.32, 0.34, 1) forwards;
+}
+
+.reveal-combo.combo-active {
+  font-size: 1.45rem;
+  letter-spacing: 0.08em;
+  color: #fef08a;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.88), rgba(245, 158, 11, 0.92), rgba(236, 72, 153, 0.88));
+  padding: 4px 16px;
+  border-radius: 999px;
+  border: 2px solid #fef9c3;
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.9), 0 4px 14px rgba(0, 0, 0, 0.5);
+  animation: comboFirePop 0.65s cubic-bezier(0.18, 1.45, 0.35, 1) infinite alternate;
+}
+.reveal-bg.is-combo .reveal-effect {
+  border: 2px solid #f59e0b;
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.65);
+}
+
+@keyframes cardSpinAppear3D {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) perspective(900px) rotateY(-220deg) rotateZ(-12deg) scale(0.35);
+  }
+  65% {
+    opacity: 1;
+    transform: translate(-50%, -50%) perspective(900px) rotateY(14deg) rotateZ(2deg) scale(1.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) perspective(900px) rotateY(0deg) rotateZ(0deg) scale(1.8);
+  }
+}
+@keyframes cardSpinCombo3D {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) perspective(900px) rotateY(-380deg) scale(0.28);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) perspective(900px) rotateY(18deg) scale(2.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) perspective(900px) rotateY(0deg) scale(1.86);
+  }
+}
+@keyframes comboFirePop {
+  0% { transform: scale(1) rotate(-1.5deg); }
+  100% { transform: scale(1.1) rotate(1.5deg); }
+}
+@keyframes typeFlashRed {
+  0% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes typeFlashGreen {
+  0% { opacity: 0.92; }
+  100% { opacity: 0; }
+}
+@keyframes typeFlashPurple {
+  0% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes typeFlashGold {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes typeFlashBluePurple {
+  0% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+
+
+/* 中央カード発動ボタン（UI描画のみ） */
+.play-center-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 2px 4px;
+}
+.play-center-btn {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 0.86rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: #fff;
+  border: 2px solid #fbcfe8;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.35), 0 3px 0 #9d174d;
+  transition: transform 0.12s ease, opacity 0.15s ease;
+}
+.play-center-btn:active:not(:disabled) {
+  transform: translateY(2px);
+}
+.play-center-btn:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  border-color: #cbd5e1;
+  box-shadow: none;
+}
+
+
+/* ===== Cover Flow & Juice UI Enhancements ===== */
+.hand-row .cute-card {
+  transform-origin: center bottom;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, filter 0.2s ease;
+}
+
+/* カード光沢エフェクト（斜めハイライトsweep） */
+.card-gloss-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.08) 38%,
+    rgba(255, 255, 255, 0.52) 50%,
+    rgba(255, 255, 255, 0.08) 62%,
+    transparent 80%
+  );
+  transform: translateX(-140%) skewX(-18deg);
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0;
+}
+.hand-row .cute-card.is-center .card-gloss-sheen,
+.reveal-stage .cute-card .card-gloss-sheen {
+  opacity: 1;
+  animation: cardGlossSweep 2.4s ease-in-out infinite;
+}
+@keyframes cardGlossSweep {
+  0% { transform: translateX(-145%) skewX(-18deg); }
+  55%, 100% { transform: translateX(145%) skewX(-18deg); }
+}
+
+/* 手札中央浮き上がり＆Cover Flow強調 */
+.hand-row .cute-card.is-center {
+  border-color: #ec4899;
+  box-shadow:
+    0 0 0 3px rgba(244, 114, 182, 0.95),
+    0 0 24px rgba(236, 72, 153, 0.72),
+    0 18px 32px rgba(59, 45, 74, 0.34);
+}
+
+/* ターン発光演出 */
+.fighter-bar.active-turn {
+  border-color: #f472b6;
+  animation: turnGlowPulse 1.6s ease-in-out infinite alternate;
+}
+#selfPod.active-turn {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(253, 242, 248, 0.98) 100%);
+}
+#oppPod.active-turn {
+  border-color: #c084fc;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(250, 245, 255, 0.98) 100%);
+}
+.turn-banner.is-my-turn {
+  color: #be185d;
+  text-shadow: 0 0 12px rgba(244, 114, 182, 0.65), 0 0 22px rgba(251, 191, 36, 0.45);
+  animation: bannerPop 1.2s ease-in-out infinite alternate;
+}
+@keyframes turnGlowPulse {
+  0% {
+    box-shadow:
+      0 0 0 2.5px rgba(244, 114, 182, 0.35),
+      0 0 12px rgba(244, 114, 182, 0.25);
+  }
+  100% {
+    box-shadow:
+      0 0 0 3.5px rgba(244, 114, 182, 0.75),
+      0 0 24px rgba(236, 72, 153, 0.5),
+      0 0 34px rgba(168, 85, 247, 0.25);
+  }
+}
+@keyframes bannerPop {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.04); }
+}
+
+/* コンボ発動演出 */
+.combo-burst-banner {
+  display: none;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #ec4899);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  border: 2px solid #fef08a;
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.9), 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+.reveal-bg.is-combo .combo-burst-banner {
+  display: inline-block;
+  animation: comboBurstAnim 0.55s cubic-bezier(0.2, 1.5, 0.35, 1) forwards;
+}
+@keyframes comboBurstAnim {
+  0% { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+  70% { transform: scale(1.18) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1.05) rotate(0deg); opacity: 1; }
+}
+
+/* ダメージ / 回復ポップアップ */
+.hp-popup-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 65;
+  overflow: hidden;
+}
+.floating-pop {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  font-weight: 900;
+  font-size: 1.45rem;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+  white-space: nowrap;
+  text-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.95),
+    0 -2px 0 rgba(255, 255, 255, 0.95),
+    2px 0 0 rgba(255, 255, 255, 0.95),
+    -2px 0 0 rgba(255, 255, 255, 0.95),
+    0 6px 16px rgba(0, 0, 0, 0.35);
+  animation: hpPopupFloat 1.15s cubic-bezier(0.16, 1.28, 0.32, 1) forwards;
+}
+.floating-pop.damage {
+  color: #e11d48;
+  font-size: 1.6rem;
+}
+.floating-pop.heal {
+  color: #059669;
+  font-size: 1.45rem;
+}
+@keyframes hpPopupFloat {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.55);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -14px) scale(1.18);
+  }
+  75% {
+    opacity: 1;
+    transform: translate(-50%, -44px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -62px) scale(0.92);
+  }
+}
+
+/* 長押しカード拡大プレビュー */
+.longpress-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  background: rgba(18, 10, 32, 0.72);
+  backdrop-filter: blur(4px);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+}
+.longpress-overlay.open {
+  display: flex;
+}
+.longpress-card-wrap {
+  transform: scale(1.95);
+  transform-origin: center center;
+  margin: 46px 0;
+  animation: longpressZoomIn 0.2s cubic-bezier(0.2, 1.3, 0.4, 1) forwards;
+}
+.longpress-card-wrap .cute-card {
+  opacity: 1 !important;
+  cursor: default;
+  box-shadow:
+    0 0 0 3px #f472b6,
+    0 0 28px rgba(244, 114, 182, 0.8),
+    0 20px 44px rgba(0, 0, 0, 0.55);
+}
+.longpress-hint {
+  color: #fff;
+  font-size: 0.76rem;
+  font-weight: 800;
+  background: rgba(59, 45, 74, 0.85);
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(251, 207, 232, 0.5);
+}
+@keyframes longpressZoomIn {
+  0% { opacity: 0.4; transform: scale(1.25); }
+  100% { opacity: 1; transform: scale(1.95); }
+}
+
+
+/* ===== Card Dex (カード図鑑) ===== */
+.dex-open-btn{margin-top:10px;width:100%;background:linear-gradient(135deg,#fff,#fdf2f8);color:#9d174d;border:2px solid #f9a8d4;border-radius:16px;padding:9px 12px;font-family:inherit;font-size:.82rem;font-weight:900;cursor:pointer;box-shadow:0 3px 0 #fbcfe8;display:flex;align-items:center;justify-content:center;gap:6px}
+.dex-open-btn:active{transform:translateY(2px)}
+.dex-modal-bg{position:fixed;inset:0;background:rgba(30,18,50,.72);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:80;padding:10px}
+.dex-modal-bg.open{display:flex}
+.dex-box{background:#fff;border:3px solid #f9a8d4;border-radius:24px;width:100%;max-width:520px;height:88dvh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 18px 44px rgba(0,0,0,.35)}
+.dex-header{padding:12px 14px 8px;background:linear-gradient(135deg,#fdf2f8,#f5f3ff);border-bottom:2px solid #fbcfe8;flex-shrink:0}
+.dex-title-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dex-search{width:100%;margin-top:8px;padding:7px 11px;border-radius:12px;border:2px solid #f9a8d4;font-family:inherit;font-size:.8rem;font-weight:700;outline:none}
+.dex-filters{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.dex-filter-btn{border:1.5px solid #e9d5ff;background:#fff;color:#5b21b6;border-radius:999px;padding:3px 9px;font-family:inherit;font-size:.66rem;font-weight:800;cursor:pointer}
+.dex-filter-btn.active{background:linear-gradient(135deg,#ec4899,#8b5cf6);color:#fff;border-color:transparent}
+.dex-grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:10px;justify-items:center;align-content:start;background:#faf5ff}
+.dex-grid .cute-card{flex:none;scroll-snap-align:none}
+/* ===== 簡易共有（ファイルでLINE送信） ===== */
+.simple-share-box{margin-top:12px;padding:12px 12px 10px;border:2px dashed #f9a8d4;border-radius:18px;background:#fff7fb;text-align:left}
+.simple-share-title{font-size:.88rem;font-weight:900;color:#be185d;text-align:center}
+.simple-share-desc{margin:6px 0 0;font-size:.74rem;font-weight:700;line-height:1.55;color:var(--text-main)}
+.simple-share-btn{width:100%;margin-top:10px;padding:12px 10px;font-size:.92rem;border-radius:14px}
+.simple-share-status{display:none;margin-top:8px;padding:7px 10px;border-radius:10px;background:#ecfdf5;border:1.5px solid #6ee7b7;color:#065f46;font-size:.74rem;font-weight:800;line-height:1.45;text-align:center}
+.simple-share-status.show{display:block}
+.simple-share-steps{margin:10px 0 0;padding-left:1.25em;font-size:.76rem;font-weight:700;line-height:1.65;color:var(--text-main)}
+.simple-share-note{margin:8px 0 0;font-size:.66rem;font-weight:700;line-height:1.5;color:var(--text-sub)}
+
+</style>
+
+<meta name="theme-color" content="#ec4899" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MY FIELD" />
+<meta name="mobile-web-app-capable" content="yes" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23ec4899'/%3E%3Ctext x='90' y='112' text-anchor='middle' font-size='78' font-weight='900' fill='%23fff'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E" />
+<script>
+(function(){
+  try {
+    const manifest = {
+      name: "MY FIELD - Chaos Party Card Battle",
+      short_name: "MY FIELD",
+      start_url: "./",
+      display: "standalone",
+      background_color: "#fff5f9",
+      theme_color: "#ec4899",
+      orientation: "portrait",
+      icons: [{
+        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%23ec4899'/%3E%3Ctext x='96' y='120' text-anchor='middle' font-size='86' font-weight='900' fill='%23fff'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E",
+        sizes: "192x192",
+        type: "image/svg+xml"
+      }]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("link");
+    link.rel = "manifest";
+    link.href = url;
+    document.head.appendChild(link);
+  } catch (e) {}
+})();
+</script>
+
+</head>
+<body>
+<section id="menuScreen" class="screen active">
+ <div class="menu-card">
+  <span class="title-badge">🎲 CHAOS PARTY CARD GAME 🎲</span>
+  <h1 class="game-logo">MY FIELD</h1>
+  <div class="form-group">
+   <label class="form-label" for="playerNameInput">プレイヤー名</label>
+   <input id="playerNameInput" class="cute-input" type="text" maxlength="16" placeholder="名前を入力してね" />
+  </div>
+  <div class="form-group">
+   <span class="form-label">あそびかたを選ぶ</span>
+   <div class="mode-grid">
+    <button id="selectOfflineBtn" class="mode-btn"><span style="font-size:1.4rem;">🧸</span><span style="font-size:.84rem;font-weight:900;">オフライン対戦</span><span style="font-size:.65rem;color:var(--text-sub);">BOTとカオス戦</span></button>
+    <button id="selectOnlineBtn" class="mode-btn online"><span style="font-size:1.4rem;">💌</span><span style="font-size:.84rem;font-weight:900;">オンライン対戦</span><span style="font-size:.65rem;color:var(--text-sub);">ルームで友達と対戦</span></button>
+   </div>
+  </div>
+  <div id="onlineLobbyBox" class="online-box">
+   <label class="form-label">オンラインルーム</label>
+   <button id="createRoomBtn" class="btn btn-pink" style="width:100%;">✨ ルームを作成する</button>
+   <div style="display:flex;gap:6px;margin-top:7px;">
+    <input id="roomCodeInput" class="cute-input" type="text" placeholder="ルームID" style="flex:1;text-transform:uppercase;padding:8px 10px;" />
+    <button id="joinRoomBtn" class="btn btn-purple">入室</button>
+   </div>
+   <div id="lobbyStatus" class="lobby-status">ルームを作成してIDを友達に送るか、IDを入力して入室してね！同じWiFiじゃなくても、違う回線同士でも中継サーバー経由で繋がります。</div>
+   <button id="onlineStartBtn" class="btn btn-gold" style="width:100%;margin-top:8px;display:none;">🎀 カオスバトル開始！</button>
+  </div>
+  <button id="openDexBtn" class="dex-open-btn">📖 カード図鑑を見る（全<span id="dexTotalBadge">364</span>種）</button>
+  <div class="simple-share-box">
+   <div class="simple-share-title">💌 LINEで送る（いちばん簡単な方法）</div>
+   <p class="simple-share-desc">アカウント登録も、リンクのコピーもいりません。下のボタンを押してファイルを保存して、そのままLINEで友達に送るだけです。</p>
+   <button id="downloadGameBtn" class="btn btn-pink simple-share-btn" type="button">⬇️ ゲームファイルをダウンロード</button>
+   <div id="downloadStatus" class="simple-share-status" aria-live="polite"></div>
+   <ol class="simple-share-steps">
+    <li>上のボタンを押して <strong>my-field.html</strong> を保存する</li>
+    <li>LINEのトークを開いて「＋」→「ファイル」から送る</li>
+    <li>友達がファイルを開けば、すぐ遊べます</li>
+   </ol>
+   <p class="simple-share-note">※ 受け取った人は登録なしで遊べます。オフラインのBOT対戦はそのまま動きます。オンライン対戦はネット接続とルームIDが必要です（同じWiFiでなくても、違う回線同士でも中継経由で繋がります）。</p>
+  </div>
+ </div>
+</section>
+
+<section id="battleScreen" class="screen">
+ <div class="arena-wrapper">
+  <div id="oppPod" class="fighter-bar">
+   <div class="bar-row">
+    <div class="fighter-title"><span id="oppName">OPPONENT</span><span id="oppTurnBadge" class="turn-pill" style="display:none;">TURN</span></div>
+    <div class="metrics-group"><span>❤️ <strong id="oppHp">500</strong>/500</span><span class="cost-chip">⭐ <span id="oppCost">3</span></span></div>
+   </div>
+   <div class="hp-bar-bg"><div id="oppHpFill" class="hp-bar-val"></div></div>
+   <div class="sub-strip"><div id="oppBuffs" class="buff-list"></div><div id="oppHandCards" class="opp-mini-cards"></div></div>
+  </div>
+  <div class="center-field">
+   <div class="hud-top">
+    <div style="display:flex;align-items:center;gap:5px;">
+     <button id="backMenuBtn" class="btn btn-soft" style="padding:3px 8px;font-size:.64rem;">← 戻る</button>
+     <span class="round-badge">ROUND <span id="roundNum">1</span></span>
+    </div>
+    <div id="turnStatusText" class="turn-banner">YOUR TURN</div>
+    <button id="toggleLogBtn" class="btn btn-soft" style="padding:3px 8px;font-size:.64rem;">📜 ログ</button>
+   </div>
+   <div class="stage-middle">
+    <div class="played-wrap">
+     <div id="lastActorBadge" class="last-actor-badge">LAST CARD</div>
+     <div id="lastPlayedSlot" class="played-box">まだカードは<br>ないよ</div>
+    </div>
+    <div class="action-col">
+     <button id="drawActionBtn" class="btn btn-soft" disabled>🃏 引いて終了</button>
+     <button id="endTurnActionBtn" class="btn btn-purple" disabled>⏭️ ターン終了</button>
+     <button id="treasure5Btn" class="btn btn-gold" disabled>👑 宝物 (5)</button>
+     <button id="treasure10Btn" class="btn btn-gold" disabled>💎 SS宝物 (10)</button>
+    </div>
+   </div>
+  </div>
+  <div class="bottom-zone">
+   <div id="selfPod" class="fighter-bar active-turn">
+    <div class="bar-row">
+     <div class="fighter-title"><span id="selfName">PLAYER</span><span id="selfTurnBadge" class="turn-pill">YOUR TURN</span></div>
+     <div class="metrics-group"><span>❤️ <strong id="selfHp">500</strong>/500</span><span class="cost-chip">⭐ コスト <span id="selfCost">3</span></span></div>
+    </div>
+    <div class="hp-bar-bg"><div id="selfHpFill" class="hp-bar-val"></div></div>
+    <div class="sub-strip"><div id="selfBuffs" class="buff-list"></div></div>
+   </div>
+   <div class="hand-scroll-hint"><span>🃏 手札（<strong id="handCountLabel">0</strong>/10枚）</span><span>👈 スライドで選ぶ・真ん中をタップで出す 👉</span></div>
+   <div id="handScrollOuter" class="hand-scroll-outer"><div id="handDock" class="hand-row"></div></div>
+   <div class="play-center-bar"><button id="playCenterCardBtn" class="btn play-center-btn" disabled>✨ このカードを使う</button></div>
+  </div>
+ </div>
+</section>
+
+<div id="logDrawer" class="log-pop">
+ <div style="display:flex;justify-content:space-between;align-items:center;font-size:.72rem;font-weight:900;">
+  <span>📜 バトルログ</span>
+  <button id="closeLogBtn" style="background:none;border:none;color:#9d174d;font-weight:900;cursor:pointer;">✕</button>
+ </div>
+ <div id="logList" class="log-items"></div>
+</div>
+
+<div id="revealOverlay" class="reveal-bg">
+ <div id="revealLabel" class="reveal-label"></div>
+ <div id="revealStage" class="reveal-stage"></div>
+ <div id="revealCombo" class="reveal-combo"></div>
+ <div id="comboBurstBanner" class="combo-burst-banner">⚡ COMBO ACTIVATED! ⚡</div>
+ <div id="revealEffect" class="reveal-effect"></div>
+</div>
+
+
+<div id="hpPopupLayer" class="hp-popup-layer"></div>
+
+<div id="longpressOverlay" class="longpress-overlay">
+ <div id="longpressCardWrap" class="longpress-card-wrap"></div>
+ <div class="longpress-hint">指を離すと閉じます（長押しで拡大表示）</div>
+</div>
+
+<div id="chaosModal" class="chaos-modal-bg">
+ <div class="chaos-card-box">
+  <h3 id="chaosTitle" style="margin:0 0 5px;font-size:1.05rem;color:var(--pink-dark);">は！？イベント発生！</h3>
+  <p id="chaosDesc" style="margin:0;font-size:.74rem;font-weight:700;color:var(--text-sub);"></p>
+  <div id="chaosChoices" class="choice-grid"></div>
+  <div style="margin-top:12px;"><button id="chaosCloseBtn" class="btn btn-pink">OK / 閉じる</button></div>
+ </div>
+</div>
+
+
+<div id="dexModal" class="dex-modal-bg">
+ <div class="dex-box">
+  <div class="dex-header">
+   <div class="dex-title-row">
+    <div style="font-size:1rem;font-weight:900;color:#be185d;">📖 カオスカード図鑑 <span id="dexCountText" style="font-size:.76rem;color:#6d28d9;"></span></div>
+    <button id="closeDexBtn" class="btn btn-soft" style="padding:4px 10px;font-size:.72rem;">✕ 閉じる</button>
+   </div>
+   <input id="dexSearchInput" class="dex-search" type="text" placeholder="カード名・効果・タッグ相手で検索..." />
+   <div class="dex-filters" id="dexFilters">
+    <button class="dex-filter-btn active" data-filter="all">すべて</button>
+    <button class="dex-filter-btn" data-filter="tag">🔥タッグ</button>
+    <button class="dex-filter-btn" data-filter="treasure">👑宝物</button>
+    <button class="dex-filter-btn" data-filter="SS">SSランク</button>
+    <button class="dex-filter-btn" data-filter="attack">⚔️攻撃</button>
+    <button class="dex-filter-btn" data-filter="heal">💚回復</button>
+    <button class="dex-filter-btn" data-filter="magic">🪄魔法</button>
+    <button class="dex-filter-btn" data-filter="special">🛡️特殊</button>
+   </div>
+  </div>
+  <div id="dexGrid" class="dex-grid"></div>
+ </div>
+</div>
+
+<div id="resultModal" class="modal-bg">
+ <div class="modal-card">
+  <h2 id="resultTitle" style="margin:0 0 5px;font-size:1.5rem;color:var(--pink-dark);">YOU WIN!</h2>
+  <p id="resultDesc" style="color:var(--text-sub);margin:0 0 14px;font-size:.8rem;font-weight:700;"></p>
+  <div style="display:flex;gap:8px;">
+   <button id="modalMenuBtn" class="btn btn-soft" style="flex:1;">メニューへ</button>
+   <button id="modalRematchBtn" class="btn btn-pink" style="flex:1;">もう1戦！</button>
+  </div>
+ </div>
+</div>
+
+<script>
+const REVEAL_MS = 3200; // 出したカードを真ん中に見せる時間(ms)
+const CONFIG = { startingHP: 500, maxHP: 500, startingCost: 3, costRecovery: 2, startingHand: 5, maxHand: 10 };
+
+// crypto.randomUUID は https / localhost 以外（http のLAN等）では未定義 → フォールバック
+function uid() {
+  if (window.crypto && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === "x" ? r : (r & 3) | 8).toString(16);
+  });
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function clone(o) {
+  return typeof structuredClone === "function" ? structuredClone(o) : JSON.parse(JSON.stringify(o));
+}
+
+function buildCardArtSVG(artKey) {
+  switch (artKey) {
+    case "attack": return `<svg viewBox="0 0 160 60" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="60" fill="#ffe4e6"/><polygon points="80,4 90,22 112,22 94,34 101,54 80,42 59,54 66,34 48,22 70,22" fill="#fb7185" stroke="#fff" stroke-width="2.5"/></svg>`;
+    case "heal": return `<svg viewBox="0 0 160 60" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="60" fill="#d1fae5"/><path d="M80 50 C57 37 47 26 47 17 C47 10 53 6 61 6 C68 6 75 10 80 15 C85 10 92 6 99 6 C107 6 113 10 113 17 C113 26 103 37 80 50 Z" fill="#34d399" stroke="#fff" stroke-width="2.5"/></svg>`;
+    case "magic": return `<svg viewBox="0 0 160 60" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="60" fill="#f3e8ff"/><circle cx="80" cy="30" r="20" fill="#c084fc" stroke="#fff" stroke-width="2.5"/><text x="80" y="37" text-anchor="middle" font-size="17" font-weight="900" fill="#fff">！？</text></svg>`;
+    case "special": return `<svg viewBox="0 0 160 60" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="60" fill="#e0f2fe"/><path d="M80 8 L104 18 V34 C104 46 92 54 80 57 C68 54 56 46 56 34 V18 Z" fill="#38bdf8" stroke="#fff" stroke-width="2.5"/><circle cx="80" cy="32" r="7" fill="#fef08a"/></svg>`;
+    case "treasure":
+    default: return `<svg viewBox="0 0 160 60" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="60" fill="#fef3c7"/><polygon points="80,6 104,28 80,54 56,28" fill="#fbbf24" stroke="#fff" stroke-width="2.5"/><polygon points="80,14 94,28 80,45 66,28" fill="#fef08a"/></svg>`;
+  }
+}
+
+const CHAOS_CARDS = [
+{name:"A君",type:"attack",rank:"A",art:"attack",cost:2,comboTarget:"Ｂ君",description:"相手に55ダメージ。手札に「Ｂ君」がいればタッグ暴走で165ダメージ！",effects:[{action:"combo_damage",requires:"Ｂ君",base:55,bonus:165}]},
+{name:"Ｂ君",type:"attack",rank:"A",art:"attack",cost:2,comboTarget:"A君",description:"相手に55ダメージ。手札に「A君」がいればタッグ暴走で165ダメージ！",effects:[{action:"combo_damage",requires:"A君",base:55,bonus:165}]},
+{name:"おにぎり",type:"heal",rank:"B",art:"heal",cost:1,comboTarget:"ごま塩",description:"HPを50回復。手札に「ごま塩」があれば激ウマ化して180回復！",effects:[{action:"combo_heal",requires:"ごま塩",base:50,bonus:180}]},
+{name:"ごま塩",type:"magic",rank:"B",art:"magic",cost:1,comboTarget:"おにぎり",description:"HPを45回復＋1枚引く。手札に「おにぎり」があれば相手に110ダメージ！",effects:[{action:"heal",value:45},{action:"draw",value:1},{action:"if_has_damage",requires:"おにぎり",value:110}]},
+{name:"ポップ",type:"magic",rank:"B",art:"magic",cost:1,comboTarget:"ステップ",description:"コスト+2。手札に「ステップ」があればさらに1枚引いてコスト+3！",effects:[{action:"combo_cost_draw",requires:"ステップ",baseCost:2,bonusCost:3,bonusDraw:1}]},
+{name:"ステップ",type:"magic",rank:"A",art:"magic",cost:2,comboTarget:"ジャンプ",description:"相手に60ダメージ。手札に「ジャンプ」があれば140ダメージに跳ね上がる！",effects:[{action:"combo_damage",requires:"ジャンプ",base:60,bonus:140}]},
+{name:"ジャンプ",type:"attack",rank:"S",art:"attack",cost:3,comboTarget:"ポップ",description:"相手に80ダメージ。手札に「ポップ」があれば200ダメージ＆ガード付与！",effects:[{action:"combo_damage",requires:"ポップ",base:80,bonus:200},{action:"if_has_protect",requires:"ポップ"}]},
+{name:"ラッコかトド",type:"magic",rank:"A",art:"magic",cost:2,comboTarget:"トドかラッコ",description:"ランダムで70ダメージか70回復。手札に「トドかラッコ」があれば両方発動！",effects:[{action:"rakko_todo",pair:"トドかラッコ"}]},
+{name:"トドかラッコ",type:"magic",rank:"A",art:"magic",cost:2,comboTarget:"ラッコかトド",description:"相手の手札1枚奪う。「ラッコかトド」を持ってなければ自分に30ダメージ！",effects:[{action:"steal_random_hand"},{action:"unless_has_self_dmg",requires:"ラッコかトド",value:30}]},
+{name:"ここどこ！？",type:"magic",rank:"A",art:"magic",cost:2,comboTarget:"多分どっか！",description:"手札を全部捨てて3枚引き直す。「多分どっか！」があれば5枚引き直す！",effects:[{action:"mulligan_chaos",pair:"多分どっか！"}]},
+{name:"多分どっか！",type:"special",rank:"S",art:"special",cost:2,comboTarget:"ここどこ！？",description:"「ここどこ！？」を持っていれば相手と自分の手札を丸ごと入れ替える！",effects:[{action:"swap_all_hands_if",requires:"ここどこ！？"}]},
+{name:"ただし",type:"special",rank:"S",art:"special",cost:1,description:"相手に130ダメージ！ただし「盾」系カードを相手が持っていたら無効化される。",effects:[{action:"tadashi_attack"}]},
+{name:"レッドマン",type:"attack",rank:"A",art:"attack",cost:2,isTag:true,comboTarget:"ピンクマン",description:"【タッグ】相手に70ダメージ。手札に「ピンクマン」がいれば戦隊合体ビームで180ダメージ！",effects:[{action:"combo_damage",requires:"ピンクマン",base:70,bonus:180}]},
+{name:"ピンクマン",type:"heal",rank:"A",art:"heal",cost:2,isTag:true,comboTarget:"レッドマン",description:"【タッグ】HPを70回復。手札に「レッドマン」がいれば150回復＆ガード付与！",effects:[{action:"combo_heal",requires:"レッドマン",base:70,bonus:150},{action:"if_has_protect",requires:"レッドマン"}]},
+{name:"どんぐり",type:"magic",rank:"B",art:"magic",cost:1,isTag:true,comboTarget:"背比べ",description:"【タッグ】相手に50ダメージ。手札に「背比べ」があればお互いのHPを低い方に揃える！",effects:[{action:"damage",value:50},{action:"if_has_donguri",requires:"背比べ"}]},
+{name:"背比べ",type:"special",rank:"B",art:"special",cost:1,isTag:true,comboTarget:"どんぐり",description:"【タッグ】カードを1枚引く。手札に「どんぐり」があればお互いのコストを同じにする！",effects:[{action:"draw",value:1},{action:"if_has_equal_cost",requires:"どんぐり"}]},
+{name:"四面",type:"magic",rank:"A",art:"magic",cost:2,isTag:true,comboTarget:"楚歌",description:"【タッグ】相手に65ダメージ。手札に「楚歌」があれば完全包囲で170ダメージ！",effects:[{action:"combo_damage",requires:"楚歌",base:65,bonus:170}]},
+{name:"楚歌",type:"special",rank:"S",art:"special",cost:2,isTag:true,comboTarget:"四面",description:"【タッグ】相手の手札1枚奪う。手札に「四面」があれば相手の次ターンもスキップ！",effects:[{action:"steal_random_hand"},{action:"if_has_skip",requires:"四面"}]},
+{name:"シャンパン開けて",type:"magic",rank:"A",art:"magic",cost:2,isTag:true,comboTarget:"いいよー！",description:"【タッグ】コスト+2。手札に「いいよー！」があればドンペリコールでコスト+5＆2枚ドロー！",effects:[{action:"combo_cost_draw",requires:"いいよー！",baseCost:2,bonusCost:5,bonusDraw:2}]},
+{name:"いいよー！",type:"heal",rank:"A",art:"heal",cost:2,isTag:true,comboTarget:"シャンパン開けて",description:"【タッグ】HPを75回復。手札に「シャンパン開けて」があればパリピ覚醒で相手に145ダメージ！",effects:[{action:"heal",value:75},{action:"if_has_damage",requires:"シャンパン開けて",value:145}]},
+{name:"この角度！",type:"attack",rank:"A",art:"attack",cost:2,isTag:true,comboTarget:"知ってるぞ！",description:"【タッグ】相手に75ダメージ。手札に「知ってるぞ！」があればイン側ドンピシャで175ダメージ！",effects:[{action:"combo_damage",requires:"知ってるぞ！",base:75,bonus:175}]},
+{name:"知ってるぞ！",type:"special",rank:"A",art:"special",cost:2,isTag:true,comboTarget:"この角度！",description:"【タッグ】ガード付与＆1枚ドロー。手札に「この角度！」があれば相手のガードをぶち抜く140ダメージ！",effects:[{action:"protect"},{action:"draw",value:1},{action:"if_has_pierce",requires:"この角度！",value:140}]},
+{name:"肝心なところで、、",type:"magic",rank:"A",art:"magic",cost:2,isTag:true,comboTarget:"アンダーを！！！",description:"【タッグ】相手の手札を2枚覗く。手札に「アンダーを！！！」があれば相手の次ドローを消す！",effects:[{action:"peek_opp_hand",count:2},{action:"if_has_rig_draw",requires:"アンダーを！！！"}]},
+{name:"アンダーを！！！",type:"attack",rank:"S",art:"attack",cost:3,isTag:true,comboTarget:"肝心なところで、、",description:"【タッグ】相手に90ダメージ＆自分も30ダメージ。「肝心なところで、、」があれば壁激突で210ダメージ！",effects:[{action:"combo_damage",requires:"肝心なところで、、",base:90,bonus:210},{action:"self_damage",value:30}]},
+{name:"お前、、、",type:"special",rank:"S",art:"special",cost:2,isTag:true,comboTarget:"どこで、、、",description:"【タッグ】相手の手札全部晒す！手札に「どこで、、、」があれば手札を丸ごと入れ替える！",effects:[{action:"expose_all_hand"},{action:"swap_all_hands_if",requires:"どこで、、、"}]},
+{name:"どこで、、、",type:"attack",rank:"S",art:"attack",cost:2,isTag:true,comboTarget:"お前、、、",description:"【タッグ】相手に70ダメージ。手札に「お前、、、」があれば修羅場発動で185ダメージ！",effects:[{action:"combo_damage",requires:"お前、、、",base:70,bonus:185}]},
+{name:"サイドバイ",type:"attack",rank:"S",art:"attack",cost:2,isTag:true,comboTarget:"サイド！！",description:"【タッグ】相手に80ダメージ。手札に「サイド！！」があればバチバチ並走バトルで190ダメージ！",effects:[{action:"combo_damage",requires:"サイド！！",base:80,bonus:190}]},
+{name:"サイド！！",type:"attack",rank:"S",art:"attack",cost:2,isTag:true,comboTarget:"サイドバイ",description:"【タッグ】相手に80ダメージ。手札に「サイドバイ」があればスリップストリームでコスト+3＆ガード！",effects:[{action:"damage",value:80},{action:"if_has_cost_protect",requires:"サイドバイ",cost:3}]},
+{name:"Nosferatu",type:"attack",rank:"SS",art:"attack",cost:4,isTag:true,comboTarget:"Vlykolakas",description:"【タッグ】吸血110ダメージ＆55回復！手札に「Vlykolakas」がいれば闇の共鳴で220ダメージ＆110回復！",effects:[{action:"nosferatu_drain",requires:"Vlykolakas"}]},
+{name:"Vlykolakas",type:"magic",rank:"SS",art:"magic",cost:3,isTag:true,comboTarget:"Nosferatu",description:"【タッグ】3T相手が毎ターン50呪いダメージ！手札に「Nosferatu」がいれば即座に2枚ドロー＆コスト+2！",effects:[{action:"add_continuous_effect",targetEnemy:true,duration:3,effect:{action:"continuous_damage",value:50}},{action:"if_has_draw",requires:"Nosferatu",value:2},{action:"if_has_cost",requires:"Nosferatu",value:2}]},
+{name:"ウマ娘",type:"attack",rank:"S",art:"attack",cost:2,isTag:true,comboTarget:"犬息子",description:"【タッグ】末脚炸裂85ダメージ！手札に「犬息子」がいれば異種混合レースで180ダメージ！",effects:[{action:"combo_damage",requires:"犬息子",base:85,bonus:180}]},
+{name:"犬息子",type:"heal",rank:"A",art:"heal",cost:1,isTag:true,comboTarget:"ウマ娘",description:"【タッグ】HPを65回復＆1枚ドロー。手札に「ウマ娘」がいればワンワン大暴走で130ダメージ！",effects:[{action:"heal",value:65},{action:"draw",value:1},{action:"if_has_damage",requires:"ウマ娘",value:130}]},
+{name:"アメリカンカジュアル",type:"magic",rank:"A",art:"magic",cost:2,isTag:true,comboTarget:"ブラジリアン柔術",description:"【タッグ】アメカジコーデでHP85回復＆ガード付与！手札に「ブラジリアン柔術」があればコスト+3！",effects:[{action:"heal",value:85},{action:"protect"},{action:"if_has_cost",requires:"ブラジリアン柔術",value:3}]},
+{name:"ブラジリアン柔術",type:"attack",rank:"S",art:"attack",cost:3,isTag:true,comboTarget:"アメリカンカジュアル",description:"【タッグ】関節技で95ダメージ！手札に「アメリカンカジュアル」があれば三角絞め一本で195ダメージ！",effects:[{action:"combo_damage",requires:"アメリカンカジュアル",base:95,bonus:195}]},
+{name:"まずは黒帯",type:"attack",rank:"S",art:"attack",cost:3,isTag:true,comboTarget:"まずは白帯",description:"【タッグ】師範代の一撃105ダメージ！手札に「まずは白帯」がいれば下剋上阻止で190ダメージ！",effects:[{action:"combo_damage",requires:"まずは白帯",base:105,bonus:190}]},
+{name:"まずは白帯",type:"special",rank:"B",art:"special",cost:1,isTag:true,comboTarget:"まずは黒帯",description:"【タッグ】初心者の気合で2枚ドロー！手札に「まずは黒帯」がいれば黒帯昇格してHP130回復＆ガード！",effects:[{action:"draw",value:2},{action:"if_has_heal_protect",requires:"まずは黒帯",value:130}]},
+{name:"サーモンには",type:"heal",rank:"B",art:"heal",cost:1,isTag:true,comboTarget:"マヨネーズだべ！",description:"【タッグ】HPを60回復。手札に「マヨネーズだべ！」があれば炙りサーモンマヨ化してHP185回復！",effects:[{action:"combo_heal",requires:"マヨネーズだべ！",base:60,bonus:185}]},
+{name:"マヨネーズだべ！",type:"magic",rank:"B",art:"magic",cost:1,isTag:true,comboTarget:"サーモンには",description:"【タッグ】コスト+2。手札に「サーモンには」があればカロリー爆弾で相手に135ダメージ！",effects:[{action:"add_cost",value:2},{action:"if_has_damage",requires:"サーモンには",value:135}]},
+{name:"日本",type:"special",rank:"S",art:"special",cost:2,isTag:true,comboTarget:"ブラジル",description:"【タッグ】ガード付与＆HP70回復。手札に「ブラジル」がいれば地球の裏側ワープでHP入れ替え！",effects:[{action:"protect"},{action:"heal",value:70},{action:"if_has_swap_hp",requires:"ブラジル"}]},
+{name:"ブラジル",type:"attack",rank:"S",art:"attack",cost:2,isTag:true,comboTarget:"日本",description:"【タッグ】サンバの勢いで85ダメージ！手札に「日本」がいれば地球貫通185ダメージ！",effects:[{action:"combo_damage",requires:"日本",base:85,bonus:185}]},
+{name:"フェラーリ",type:"attack",rank:"SS",art:"attack",cost:3,isTag:true,comboTarget:"ランボルギーニ",description:"【タッグ】跳ね馬V12咆哮115ダメージ！手札に「ランボルギーニ」がいればイタリアン猛獣タッグで225ダメージ！",effects:[{action:"combo_damage",requires:"ランボルギーニ",base:115,bonus:225}]},
+{name:"ランボルギーニ",type:"attack",rank:"SS",art:"attack",cost:3,isTag:true,comboTarget:"フェラーリ",description:"【タッグ】猛牛突進115ダメージ！手札に「フェラーリ」がいればガード貫通210ダメージ＆コスト+2！",effects:[{action:"combo_pierce",requires:"フェラーリ",base:115,bonus:210},{action:"if_has_cost",requires:"フェラーリ",value:2}]},
+{name:"ポルシェ",type:"attack",rank:"S",art:"attack",cost:3,isTag:true,comboTarget:"BMW",description:"【タッグ】水平対向6気筒100ダメージ！手札に「BMW」がいればアウトバーン全開で200ダメージ！",effects:[{action:"combo_damage",requires:"BMW",base:100,bonus:200}]},
+{name:"BMW",type:"special",rank:"S",art:"special",cost:2,isTag:true,comboTarget:"ポルシェ",description:"【タッグ】駆けぬける歓びで2枚ドロー＆ガード！手札に「ポルシェ」がいれば相手ターンもスキップ！",effects:[{action:"draw",value:2},{action:"protect"},{action:"if_has_skip",requires:"ポルシェ"}]},
+{name:"NISSAN",type:"attack",rank:"S",art:"attack",cost:3,isTag:true,comboTarget:"トヨタ",description:"【タッグ】技術の日産RB26炸裂105ダメージ！手札に「トヨタ」がいれば日本車最強タッグで210ダメージ！",effects:[{action:"combo_damage",requires:"トヨタ",base:105,bonus:210}]},
+{name:"トヨタ",type:"heal",rank:"S",art:"heal",cost:2,isTag:true,comboTarget:"NISSAN",description:"【タッグ】圧倒的信頼性でHP95回復＆ガード！手札に「NISSAN」がいればコスト+3＆1枚ドロー！",effects:[{action:"heal",value:95},{action:"protect"},{action:"if_has_cost_draw",requires:"NISSAN",cost:3,draw:1}]},
+{name:"本音ダダ漏ればばあ",type:"magic",rank:"S",art:"magic",cost:2,description:"なんかよくわからんけど相手の手札を全員に全部晒す！",effects:[{action:"expose_all_hand"}]},
+{name:"お局",type:"attack",rank:"A",art:"attack",cost:2,description:"腹たったから相手の手札の枚数×25ダメージ！",effects:[{action:"angry_hand_damage",mult:25}]},
+{name:"バ先のリップ",type:"magic",rank:"B",art:"magic",cost:1,description:"「誰のやねん！」相手の手札からランダムに1枚奪って、代わりにゴミを押し付ける。",effects:[{action:"steal_and_give_trash"}]},
+{name:"十字キー",type:"magic",rank:"A",art:"magic",cost:2,description:"上下左右の4択ルーレット！ダメージ・回復・強奪・自爆のどれかが起きる。",effects:[{action:"dpad_roulette"}]},
+{name:"テクニカルマジシャン",type:"special",rank:"S",art:"special",cost:3,description:"手札を1枚選んで相手と交換し、さらに相手の次のドローを消す。",effects:[{action:"swap_card_with_opp"},{action:"rig_opp_next_draw"}]},
+{name:"プログラマー",type:"special",rank:"SS",art:"special",cost:3,description:"バグ発生！自分の手札のコストを全部「1」に書き換える。",effects:[{action:"hack_hand_cost_1"}]},
+{name:"イースター島から。",type:"attack",rank:"S",art:"attack",cost:3,description:"モアイが飛んできた！1〜220の完全運ゲーダメージ！",effects:[{action:"random_damage",min:1,max:220}]},
+{name:"パソコンぶち壊しチャンネル",type:"attack",rank:"SS",art:"attack",cost:4,description:"台パン炸裂！相手に150ダメージを与えるが、自分も勢いで40ダメージ。",effects:[{action:"damage",value:150},{action:"self_damage",value:40}]},
+{name:"パソコンのエンターキー強く押すな",type:"attack",rank:"A",art:"attack",cost:2,description:"ッターン！！相手に85ダメージ。相手のコストが5以上ならさらに+60ダメージ！",effects:[{action:"enter_slam"}]},
+{name:"びーるがのびーる(´^ω^｀)ﾌﾞﾌｫwww",type:"magic",rank:"B",art:"magic",cost:1,description:"意味不明すぎて相手にカードを2枚引かせる。",effects:[{action:"opp_draw",value:2}]},
+{name:"明日チンすれば？",type:"magic",rank:"A",art:"magic",cost:2,description:"バトルを先延ばし！相手の次のターンをスキップする。",effects:[{action:"skip_turn"}]},
+{name:"まぁいいんじゃね。",type:"special",rank:"S",art:"special",cost:3,description:"適当すぎて自分と相手のHPを平均化して同じにする！",effects:[{action:"equalize_hp"}]},
+{name:"おうちに帰ろうよ。",type:"special",rank:"A",art:"special",cost:2,description:"お互いのコストを全部0にして強制帰宅させる。",effects:[{action:"reset_all_cost"}]},
+{name:"カフェモカフラペチーノザウルス",type:"heal",rank:"SS",art:"heal",cost:4,description:"甘すぎて覚醒！HPを160回復し、次のダメージを1回防ぐ。",effects:[{action:"heal",value:160},{action:"protect"}]},
+{name:"盾(カス)",type:"special",rank:"D",art:"special",cost:0,description:"コスト0のカス盾。50%の確率でダメージを1回防ぎ、50%で即砕ける。",effects:[{action:"kasu_shield"}]},
+{name:"盾(中古)",type:"special",rank:"B",art:"special",cost:1,description:"次のダメージを1回防ぐ（たまに相手にもHP20あげちゃう）。",effects:[{action:"protect"},{action:"opp_heal_tiny"}]},
+{name:"盾(いちごミルク)",type:"special",rank:"A",art:"special",cost:2,description:"次のダメージを1回防ぎ、おいしくてHPを55回復する。",effects:[{action:"protect"},{action:"heal",value:55}]},
+{name:"呪いの箱舟",type:"magic",rank:"S",art:"magic",cost:3,description:"3ターン相手が毎ターン開始時に45呪いダメージ！",effects:[{action:"add_continuous_effect",targetEnemy:true,duration:3,effect:{action:"continuous_damage",value:45}}]},
+{name:"トロイの木馬",type:"magic",rank:"S",art:"magic",cost:2,description:"相手の手札に「木馬の中の爆弾」を1枚忍ばせ、手札を3枚覗く。",effects:[{action:"plant_bomb"},{action:"peek_opp_hand",count:3}]},
+{name:"競馬のおっさん達",type:"magic",rank:"A",art:"magic",cost:2,description:"大穴狙い！30%で相手に190ダメージ、70%でハズレて自分に25ダメージ。",effects:[{action:"keiba_gamble"}]},
+{name:"怒槌",type:"attack",rank:"SS",art:"attack",cost:5,description:"ドンだーの怒り！相手に185の超絶ダメージを叩き込む！",effects:[{action:"damage",value:185}]},
+{name:"おすし",type:"heal",rank:"B",art:"heal",cost:1,description:"うまい！HPを65回復する。",effects:[{action:"heal",value:65}]},
+{name:"オムライス",type:"heal",rank:"A",art:"heal",cost:2,description:"ふわとろ！HPを95回復し、カードを1枚引く。",effects:[{action:"heal",value:95},{action:"draw",value:1}]},
+{name:"ショットガン！",type:"attack",rank:"A",art:"attack",cost:3,description:"至近距離ぶっぱなし！相手に115ダメージ。",effects:[{action:"damage",value:115}]},
+{name:"ロボットさん。",type:"magic",rank:"A",art:"magic",cost:2,description:"候補3枚から好きなカードを1枚選んで手札に生成する。",effects:[{action:"pick_from_pool",count:3}]},
+{name:"たかし",type:"magic",rank:"B",art:"magic",cost:1,description:"たかしがなぜか相手に77ダメージ与えて帰っていく。",effects:[{action:"damage",value:77}]},
+{name:"くつした",type:"magic",rank:"C",art:"magic",cost:1,description:"片方なくなった！相手の手札からランダムに1枚奪う。",effects:[{action:"steal_random_hand"}]},
+{name:"こねこちん",type:"heal",rank:"S",art:"heal",cost:2,description:"可愛すぎてHPを110回復し、相手はメロメロで次ドロー不可！",effects:[{action:"heal",value:110},{action:"rig_opp_next_draw"}]},
+{name:"ちょんぼりん",type:"special",rank:"SS",art:"special",cost:4,isTag:true,comboTarget:"ぼんちょりん",description:"【タッグ】自分と相手のHPを丸ごと入れ替える！手札に「ぼんちょりん」があればコスト+2！",effects:[{action:"swap_hp"},{action:"if_has_cost",requires:"ぼんちょりん",value:2}]},
+{name:"魔法のストッキ",type:"magic",rank:"A",art:"magic",cost:2,description:"カードを2枚引き、自分のコストを+1する。",effects:[{action:"draw",value:2},{action:"add_cost",value:1}]},
+{name:"素敵なステーキ",type:"heal",rank:"S",art:"heal",cost:3,description:"肉汁爆発！HPを135回復する。",effects:[{action:"heal",value:135}]},
+{name:"ロンギヌスの槍",type:"attack",rank:"SS",art:"attack",cost:4,isTag:true,comboTarget:"槍",description:"【タッグ】相手のガードを貫通して130ダメージ！手札に「槍」があれば二本槍共鳴で180貫通ダメージ！",effects:[{action:"combo_pierce",requires:"槍",base:130,bonus:180}]},
+{name:"ヘッドホン",type:"special",rank:"A",art:"special",cost:2,description:"爆音で何も聞こえない！次のダメージを1回防ぎ、1枚引く。",effects:[{action:"protect"},{action:"draw",value:1}]},
+{name:"人参",type:"heal",rank:"C",art:"heal",cost:1,description:"栄養満点！HPを55回復する。",effects:[{action:"heal",value:55}]},
+{name:"爆裂愛してる",type:"attack",rank:"SS",art:"attack",cost:4,description:"重すぎる愛！相手に160ダメージを与え、自分も60回復する。",effects:[{action:"damage",value:160},{action:"heal",value:60}]},
+{name:"サッカーボール",type:"attack",rank:"A",art:"attack",cost:2,description:"顔面直撃！相手に90ダメージ。",effects:[{action:"damage",value:90}]},
+{name:"泥沼探検団",type:"magic",rank:"A",art:"magic",cost:2,description:"お互い泥まみれ！両者に60ダメージ＆両者1枚ドロー。",effects:[{action:"damage",value:60},{action:"self_damage",value:60},{action:"draw",value:1},{action:"opp_draw",value:1}]},
+{name:"オブラート",type:"special",rank:"B",art:"special",cost:1,description:"ダメージをオブラートに包む！ガードを付与する。",effects:[{action:"protect"}]},
+{name:"水",type:"heal",rank:"D",art:"heal",cost:0,description:"コスト0の水。HPを30回復する。",effects:[{action:"heal",value:30}]},
+{name:"もるっち",type:"heal",rank:"B",art:"heal",cost:1,description:"プイプイ癒やし！HPを65回復する。",effects:[{action:"heal",value:65}]},
+{name:"どんぐりの木",type:"magic",rank:"A",art:"magic",cost:2,comboTarget:"どんぐり",description:"どんぐり量産！カードを2枚引く。手札に「どんぐり」があればコスト+2！",effects:[{action:"draw",value:2},{action:"if_has_cost",requires:"どんぐり",value:2}]},
+{name:"見て！お母さん！",type:"magic",rank:"A",art:"magic",cost:2,comboTarget:"あらぁ。",description:"【タッグ】相手に75ダメージ。手札に「あらぁ。」があれば大注目で175ダメージ！",effects:[{action:"combo_damage",requires:"あらぁ。",base:75,bonus:175}]},
+{name:"あらぁ。",type:"heal",rank:"A",art:"heal",cost:2,comboTarget:"見て！お母さん！",description:"【タッグ】HPを80回復。手札に「見て！お母さん！」があれば驚きの170回復＆ガード！",effects:[{action:"combo_heal",requires:"見て！お母さん！",base:80,bonus:170},{action:"if_has_protect",requires:"見て！お母さん！"}]},
+{name:"炊飯器",type:"heal",rank:"A",art:"heal",cost:2,description:"ほかほかご飯が炊けた！HPを95回復＆1枚ドロー。",effects:[{action:"heal",value:95},{action:"draw",value:1}]},
+{name:"ラーメンってさ、塩は",type:"magic",rank:"B",art:"magic",cost:1,comboTarget:"塩は論外だよな",description:"【タッグ】1枚ドロー。手札に「塩は論外だよな」があれば語り合いすぎてコスト+3！",effects:[{action:"draw",value:1},{action:"if_has_cost",requires:"塩は論外だよな",value:3}]},
+{name:"塩は論外だよな",type:"attack",rank:"S",art:"attack",cost:2,comboTarget:"ラーメンってさ、塩は",description:"【タッグ】相手に85ダメージ。手札に「ラーメンってさ、塩は」があれば熱弁炸裂190ダメージ！",effects:[{action:"combo_damage",requires:"ラーメンってさ、塩は",base:85,bonus:190}]},
+{name:"大きなしゃもじやん！",type:"attack",rank:"A",art:"attack",cost:2,description:"巨大しゃもじでフルスイング！相手に95ダメージ。",effects:[{action:"damage",value:95}]},
+{name:"パック必須",type:"special",rank:"A",art:"special",cost:2,description:"保湿＆準備万端！HPを75回復し、次のダメージを1回防ぐ。",effects:[{action:"heal",value:75},{action:"protect"}]},
+{name:"魔法の放棄",type:"magic",rank:"S",art:"magic",cost:2,description:"全部投げ出した！手札を全部捨てて3枚引き直す。",effects:[{action:"mulligan_chaos",pair:"__NONE__"}]},
+{name:"明太子",type:"attack",rank:"A",art:"attack",cost:2,description:"ピリ辛刺激で相手に90ダメージ＆自分はHP40回復！",effects:[{action:"damage",value:90},{action:"heal",value:40}]},
+{name:"魔法のホウキ",type:"magic",rank:"A",art:"magic",cost:2,description:"空を飛んでコスト+2＆1枚ドロー！",effects:[{action:"add_cost",value:2},{action:"draw",value:1}]},
+{name:"魔法の絨毯",type:"special",rank:"A",art:"special",cost:2,comboTarget:"間法の絨毯",description:"【タッグ】ガード付与＆1枚ドロー。手札に「間法の絨毯」があれば時空飛行でコスト+3！",effects:[{action:"protect"},{action:"draw",value:1},{action:"if_has_cost",requires:"間法の絨毯",value:3}]},
+{name:"間法の絨毯",type:"magic",rank:"S",art:"magic",cost:2,comboTarget:"魔法の絨毯",description:"【タッグ】相手手札1枚奪う。手札に「魔法の絨毯」があれば隙間ワープで相手に165ダメージ！",effects:[{action:"steal_random_hand"},{action:"if_has_damage",requires:"魔法の絨毯",value:165}]},
+{name:"ベイマックス",type:"heal",rank:"SS",art:"heal",cost:3,description:"ケア完了！HPを150回復し、ガードを付与する。",effects:[{action:"heal",value:150},{action:"protect"}]},
+{name:"Hey",type:"magic",rank:"B",art:"magic",cost:1,comboTarget:"123で飛び込め",description:"【タッグ】コスト+2。手札に「123で飛び込め」があれば合図バッチリで1枚ドロー！",effects:[{action:"add_cost",value:2},{action:"if_has_draw",requires:"123で飛び込め",value:1}]},
+{name:"123で飛び込め",type:"attack",rank:"S",art:"attack",cost:2,comboTarget:"Hey",description:"【タッグ】相手に85ダメージ。手札に「Hey」があればカウントダウン突撃で185ダメージ！",effects:[{action:"combo_damage",requires:"Hey",base:85,bonus:185}]},
+{name:"ギャラクティック",type:"attack",rank:"SS",art:"attack",cost:4,description:"銀河規模の衝撃！相手に165ダメージ＆相手次ドロー不可！",effects:[{action:"damage",value:165},{action:"rig_opp_next_draw"}]},
+{name:"ディセクション",type:"magic",rank:"S",art:"magic",cost:2,description:"精密分解！相手の手札を2枚覗き、1枚奪う。",effects:[{action:"peek_opp_hand",count:2},{action:"steal_random_hand"}]},
+{name:"ディスティネーション",type:"special",rank:"S",art:"special",cost:3,description:"運命の行き先！相手ターンをスキップ＆1枚ドロー。",effects:[{action:"skip_turn"},{action:"draw",value:1}]},
+{name:"ディメンション",type:"special",rank:"SS",art:"special",cost:4,description:"次元転移！自分と相手のHPを入れ替える！",effects:[{action:"swap_hp"}]},
+{name:"オブラクション",type:"special",rank:"A",art:"special",cost:2,description:"異議あり！ガード付与＆相手の次ドローを消す。",effects:[{action:"protect"},{action:"rig_opp_next_draw"}]},
+{name:"ドゥネーション",type:"heal",rank:"A",art:"heal",cost:2,description:"気前の良い寄付！HPを100回復し、コスト+2。",effects:[{action:"heal",value:100},{action:"add_cost",value:2}]},
+{name:"こんびにのおにぎり",type:"heal",rank:"B",art:"heal",cost:1,description:"フィルム剥がすの楽しい！HPを65回復。",effects:[{action:"heal",value:65}]},
+{name:"細巻き納豆",type:"heal",rank:"B",art:"heal",cost:1,description:"ネバネバパワー！HPを60回復＆1枚ドロー。",effects:[{action:"heal",value:60},{action:"draw",value:1}]},
+{name:"カラコン",type:"magic",rank:"B",art:"magic",cost:1,description:"盛れ盛れ視界！相手の手札を2枚覗き見する。",effects:[{action:"peek_opp_hand",count:2}]},
+{name:"おてんばピンクマン",type:"heal",rank:"A",art:"heal",cost:2,isTag:true,comboTarget:"おてんばレッドマン",description:"【タッグ】HPを80回復。手札に「おてんばレッドマン」がいればおてんば全開で160回復＆ガード！",effects:[{action:"combo_heal",requires:"おてんばレッドマン",base:80,bonus:160},{action:"if_has_protect",requires:"おてんばレッドマン"}]},
+{name:"おてんばレッドマン",type:"attack",rank:"A",art:"attack",cost:2,isTag:true,comboTarget:"おてんばピンクマン",description:"【タッグ】相手に80ダメージ。手札に「おてんばピンクマン」がいればおてんば乱舞で185ダメージ！",effects:[{action:"combo_damage",requires:"おてんばピンクマン",base:80,bonus:185}]},
+{name:"栃木県",type:"magic",rank:"A",art:"magic",cost:2,comboTarget:"群馬県",description:"【タッグ】北関東パワーでHP80回復＆1枚ドロー！手札に「群馬県」があればコスト+3！",effects:[{action:"heal",value:80},{action:"draw",value:1},{action:"if_has_cost",requires:"群馬県",value:3}]},
+{name:"群馬県",type:"attack",rank:"A",art:"attack",cost:2,comboTarget:"栃木県",description:"【タッグ】上州の風で90ダメージ！手札に「栃木県」があれば北関東同盟で190ダメージ！",effects:[{action:"combo_damage",requires:"栃木県",base:90,bonus:190}]},
+{name:"岐阜県",type:"attack",rank:"A",art:"attack",cost:2,description:"飛騨・美濃の底力！相手に95ダメージ。",effects:[{action:"damage",value:95}]},
+{name:"島根県",type:"magic",rank:"A",art:"magic",cost:2,description:"ご縁パワー！カードを2枚引き、ガードを付与する。",effects:[{action:"draw",value:2},{action:"protect"}]},
+{name:"北海道",type:"heal",rank:"S",art:"heal",cost:3,description:"でっかいどう！HPを135回復＆1枚ドロー。",effects:[{action:"heal",value:135},{action:"draw",value:1}]},
+{name:"青森県",type:"attack",rank:"A",art:"attack",cost:2,description:"津軽の剛腕！相手に100ダメージ。",effects:[{action:"damage",value:100}]},
+{name:"京都府",type:"special",rank:"S",art:"special",cost:3,description:"千年の奥義！ガード付与＆相手ターンをスキップ。",effects:[{action:"protect"},{action:"skip_turn"}]},
+{name:"東京都",type:"attack",rank:"S",art:"attack",cost:3,description:"大都市の集中砲火！相手に125ダメージ＆コスト+2。",effects:[{action:"damage",value:125},{action:"add_cost",value:2}]},
+{name:"襟裳岬",type:"magic",rank:"A",art:"magic",cost:2,description:"強い風が吹く！相手の手札1枚奪い、自分のコスト+2。",effects:[{action:"steal_random_hand"},{action:"add_cost",value:2}]},
+{name:"デスク",type:"special",rank:"B",art:"special",cost:1,description:"机上で作戦立案！1枚ドロー＆コスト+1。",effects:[{action:"draw",value:1},{action:"add_cost",value:1}]},
+{name:"エッチ！",type:"attack",rank:"A",art:"attack",cost:2,comboTarget:"スケッチ！",description:"【タッグ】相手に85ダメージ。手札に「スケッチ！」があれば赤面クリティカルで185ダメージ！",effects:[{action:"combo_damage",requires:"スケッチ！",base:85,bonus:185}]},
+{name:"スケッチ！",type:"magic",rank:"A",art:"magic",cost:2,comboTarget:"エッチ！",description:"【タッグ】スケッチして2枚ドロー！手札に「エッチ！」があればガード付与＆コスト+2！",effects:[{action:"draw",value:2},{action:"if_has_cost_protect",requires:"エッチ！",cost:2}]},
+{name:"One Touch",type:"magic",rank:"B",art:"magic",cost:1,description:"ワンタッチ起動！コスト+2。",effects:[{action:"add_cost",value:2}]},
+{name:"RESTART",type:"special",rank:"S",art:"special",cost:2,description:"仕切り直し！手札を全部捨てて4枚引き直す。",effects:[{action:"mulligan_chaos",pair:"__RESTART4__"}]},
+{name:"RESUME",type:"special",rank:"A",art:"special",cost:2,description:"続きから再開！HPを85回復＆1枚ドロー。",effects:[{action:"heal",value:85},{action:"draw",value:1}]},
+{name:"RETRY",type:"magic",rank:"A",art:"magic",cost:2,description:"もう一回挑戦！候補3枚から好きなカードを1枚選ぶ。",effects:[{action:"pick_from_pool",count:3}]},
+{name:"リアエンジン",type:"attack",rank:"A",art:"attack",cost:2,comboTarget:"リアドライブ",description:"【タッグ】RRトラクションで90ダメージ！手札に「リアドライブ」があれば190ダメージ！",effects:[{action:"combo_damage",requires:"リアドライブ",base:90,bonus:190}]},
+{name:"リアドライブ",type:"special",rank:"A",art:"special",cost:2,comboTarget:"リアエンジン",description:"【タッグ】後輪駆動でガード付与＆コスト+2！手札に「リアエンジン」があればさらに1枚ドロー！",effects:[{action:"protect"},{action:"add_cost",value:2},{action:"if_has_draw",requires:"リアエンジン",value:1}]},
+{name:"フロントエンジン",type:"attack",rank:"A",art:"attack",cost:2,comboTarget:"フロントドライブ",description:"【タッグ】FFの軽快アタックで85ダメージ！手札に「フロントドライブ」があれば180ダメージ！",effects:[{action:"combo_damage",requires:"フロントドライブ",base:85,bonus:180}]},
+{name:"フロントドライブ",type:"magic",rank:"A",art:"magic",cost:2,comboTarget:"フロントエンジン",description:"【タッグ】前輪駆動で2枚ドロー！手札に「フロントエンジン」があればコスト+2！",effects:[{action:"draw",value:2},{action:"if_has_cost",requires:"フロントエンジン",value:2}]},
+{name:"フォグが紫！？",type:"magic",rank:"A",art:"magic",cost:2,description:"妖しく光るフォグランプ！相手の手札を2枚覗き、次ドローを消す。",effects:[{action:"peek_opp_hand",count:2},{action:"rig_opp_next_draw"}]},
+{name:"ワックスつけすぎた",type:"magic",rank:"B",art:"magic",cost:1,description:"テカテカすぎて滑る！コスト+2だが自分に20ダメージ。",effects:[{action:"add_cost",value:2},{action:"self_damage",value:20}]},
+{name:"紫色の絵の具",type:"magic",rank:"A",art:"magic",cost:2,description:"紫に染め上げる！3ターン相手が毎ターン35呪いダメージ。",effects:[{action:"add_continuous_effect",targetEnemy:true,duration:3,effect:{action:"continuous_damage",value:35}}]},
+{name:"傘",type:"special",rank:"B",art:"special",cost:1,description:"雨宿りガード！次のダメージを1回防ぐ。",effects:[{action:"protect"}]},
+{name:"山",type:"attack",rank:"A",art:"attack",cost:3,description:"山の重圧！相手に115ダメージ。",effects:[{action:"damage",value:115}]},
+{name:"でかい木",type:"heal",rank:"A",art:"heal",cost:2,description:"巨木パワーでHPを105回復＆ガード付与。",effects:[{action:"heal",value:105},{action:"protect"}]},
+{name:"元気玉",type:"attack",rank:"SS",art:"attack",cost:5,description:"みんなの元気を集めて相手に210の超特大ダメージ！",effects:[{action:"damage",value:210}]},
+{name:"家畜小屋",type:"heal",rank:"A",art:"heal",cost:2,comboTarget:"にわとり兵",description:"【タッグ】HPを85回復。手札に「にわとり兵」があれば大繁殖で160回復＆1枚ドロー！",effects:[{action:"combo_heal",requires:"にわとり兵",base:85,bonus:160},{action:"if_has_draw",requires:"にわとり兵",value:1}]},
+{name:"にわとり兵",type:"attack",rank:"A",art:"attack",cost:2,comboTarget:"家畜小屋",description:"【タッグ】コケコッコー突撃で85ダメージ！手札に「家畜小屋」があれば185ダメージ！",effects:[{action:"combo_damage",requires:"家畜小屋",base:85,bonus:185}]},
+{name:"戦車1号",type:"attack",rank:"S",art:"attack",cost:3,description:"主砲発射！相手に130ダメージ。",effects:[{action:"damage",value:130}]},
+{name:"バナナアーモンド",type:"heal",rank:"B",art:"heal",cost:1,description:"栄養＆香ばしさ！HPを70回復。",effects:[{action:"heal",value:70}]},
+{name:"ショコラクレープ",type:"heal",rank:"A",art:"heal",cost:2,description:"チョコたっぷりでHPを100回復＆1枚ドロー。",effects:[{action:"heal",value:100},{action:"draw",value:1}]},
+{name:"バスクチーズケーキ",type:"heal",rank:"S",art:"heal",cost:3,description:"こんがり濃厚！HPを135回復＆ガード付与。",effects:[{action:"heal",value:135},{action:"protect"}]},
+{name:"バスケットボール",type:"attack",rank:"A",art:"attack",cost:2,description:"ダンクシュート！相手に95ダメージ。",effects:[{action:"damage",value:95}]},
+{name:"バウンサー",type:"special",rank:"A",art:"special",cost:2,description:"弾き返す！ガード付与＆相手に50ダメージ。",effects:[{action:"protect"},{action:"damage",value:50}]},
+{name:"リフレクター",type:"special",rank:"S",art:"special",cost:2,description:"反射シールド！ガード付与＆1枚ドロー。",effects:[{action:"protect"},{action:"draw",value:1}]},
+{name:"無敵のタレット",type:"attack",rank:"SS",art:"attack",cost:4,description:"自動砲台が火を吹く！相手に155ダメージ＆ガード付与。",effects:[{action:"damage",value:155},{action:"protect"}]},
+{name:"もう怒ったぞ！",type:"attack",rank:"S",art:"attack",cost:3,description:"本気モード突入！相手に135ダメージ。",effects:[{action:"damage",value:135}]},
+{name:"ローブ",type:"special",rank:"B",art:"special",cost:1,description:"魔導ローブでガード付与。",effects:[{action:"protect"}]},
+{name:"ドンと来いや！",type:"special",rank:"A",art:"special",cost:2,description:"受けて立つ！HPを80回復＆ガード付与。",effects:[{action:"heal",value:80},{action:"protect"}]},
+{name:"アサルトライフル",type:"attack",rank:"S",art:"attack",cost:3,description:"連射炸裂！相手に125ダメージ。",effects:[{action:"damage",value:125}]},
+{name:"一等兵",type:"attack",rank:"B",art:"attack",cost:1,description:"一等兵の前進！相手に65ダメージ。",effects:[{action:"damage",value:65}]},
+{name:"二等兵",type:"attack",rank:"C",art:"attack",cost:1,description:"二等兵の突撃！相手に50ダメージ。",effects:[{action:"damage",value:50}]},
+{name:"三等兵",type:"magic",rank:"C",art:"magic",cost:1,description:"三等兵の偵察！1枚ドロー＆相手に35ダメージ。",effects:[{action:"draw",value:1},{action:"damage",value:35}]},
+{name:"将軍様",type:"attack",rank:"SS",art:"attack",cost:4,description:"将軍様の号令！相手に165ダメージ＆コスト+2。",effects:[{action:"damage",value:165},{action:"add_cost",value:2}]},
+{name:"掛け算",type:"attack",rank:"A",art:"attack",cost:2,comboTarget:"四則演算",description:"【タッグ】掛け算アタックで90ダメージ！手札に「四則演算」があれば195ダメージ！",effects:[{action:"combo_damage",requires:"四則演算",base:90,bonus:195}]},
+{name:"割り算",type:"magic",rank:"A",art:"magic",cost:2,description:"半分こにする！自分と相手のHPを平均化して同じにする。",effects:[{action:"equalize_hp"}]},
+{name:"足し算",type:"heal",rank:"A",art:"heal",cost:2,description:"プラスの力！HPを95回復＆コスト+2。",effects:[{action:"heal",value:95},{action:"add_cost",value:2}]},
+{name:"引き算",type:"attack",rank:"A",art:"attack",cost:2,description:"相手のHPを削り取る！相手に95ダメージ。",effects:[{action:"damage",value:95}]},
+{name:"四則演算",type:"special",rank:"S",art:"special",cost:3,comboTarget:"掛け算",description:"【タッグ】全演算起動！2枚ドロー＆コスト+2。手札に「掛け算」があれば140ダメージ！",effects:[{action:"draw",value:2},{action:"add_cost",value:2},{action:"if_has_damage",requires:"掛け算",value:140}]},
+{name:"ドラゴンビーム",type:"attack",rank:"SS",art:"attack",cost:4,description:"竜の咆哮ビーム！相手に160ダメージ。",effects:[{action:"damage",value:160}]},
+{name:"冷凍ビーム",type:"magic",rank:"S",art:"magic",cost:3,description:"相手を凍らせる！95ダメージ＆相手ターンをスキップ！",effects:[{action:"damage",value:95},{action:"skip_turn"}]},
+{name:"灼熱ビーム",type:"attack",rank:"S",art:"attack",cost:3,description:"灼熱レーザー！相手に130ダメージ＆3T毎ターン35呪いダメージ！",effects:[{action:"damage",value:130},{action:"add_continuous_effect",targetEnemy:true,duration:3,effect:{action:"continuous_damage",value:35}}]},
+{name:"破壊光線",type:"attack",rank:"SS",art:"attack",cost:4,description:"すべてをなぎ払う破壊光線！相手に175ダメージ。",effects:[{action:"damage",value:175}]},
+{name:"破壊力光線ビーム",type:"attack",rank:"SS",art:"attack",cost:5,description:"名前からして強そう！相手に200ダメージ！",effects:[{action:"damage",value:200}]},
+{name:"ファイナルファーストアタック",type:"attack",rank:"SS",art:"attack",cost:4,description:"最初で最後の総攻撃！相手に170ダメージ＆1枚ドロー。",effects:[{action:"damage",value:170},{action:"draw",value:1}]},
+{name:"アーチェリー",type:"attack",rank:"A",art:"attack",cost:2,comboTarget:"あ、チェリー？",description:"【タッグ】弓矢で85ダメージ！手札に「あ、チェリー？」があれば狙撃で180ダメージ！",effects:[{action:"combo_damage",requires:"あ、チェリー？",base:85,bonus:180}]},
+{name:"あ、チェリー？",type:"heal",rank:"B",art:"heal",cost:1,comboTarget:"アーチェリー",description:"【タッグ】チェリーと勘違いしてHP65回復！手札に「アーチェリー」があればコスト+2！",effects:[{action:"heal",value:65},{action:"if_has_cost",requires:"アーチェリー",value:2}]},
+/* ===== 追加カード（オリジナル79枚）===== */
+{name:"寝坊",type:"attack",rank:"A",art:"attack",cost:2,isTag:true,comboTarget:"二度寝",description:"【タッグ】全力ダッシュで70ダメージ！手札に「二度寝」があれば完全に遅刻して170ダメージ！",effects:[{action:"combo_damage",requires:"二度寝",base:70,bonus:170}]},
+{name:"二度寝",type:"heal",rank:"A",art:"heal",cost:2,isTag:true,comboTarget:"寝坊",description:"【タッグ】HPを75回復。手札に「寝坊」があれば布団から出られず相手の次ターンもスキップ！",effects:[{action:"heal",value:75},{action:"if_has_skip",requires:"寝坊"}]},
+{name:"割り勘",type:"magic",rank:"B",art:"magic",cost:1,isTag:true,comboTarget:"端数",description:"【タッグ】1枚ドロー。手札に「端数」があればお互いのコストを同じに割り切る！",effects:[{action:"draw",value:1},{action:"if_has_equal_cost",requires:"端数"}]},
+{name:"端数",type:"attack",rank:"A",art:"attack",cost:2,isTag:true,comboTarget:"割り勘",description:"【タッグ】相手に60ダメージ。手札に「割り勘」があれば1円単位の怒りで160ダメージ！",effects:[{action:"combo_damage",requires:"割り勘",base:60,bonus:160}]},
+{name:"終電",type:"special",rank:"A",art:"special",cost:2,isTag:true,comboTarget:"乗り過ごし",description:"【タッグ】ガード付与＆1枚ドロー。手札に「乗り過ごし」があれば車内で爆睡してコスト+3！",effects:[{action:"protect"},{action:"draw",value:1},{action:"if_has_cost",requires:"乗り過ごし",value:3}]},
+{name:"乗り過ごし",type:"attack",rank:"S",art:"attack",cost:2,isTag:true,comboTarget:"終電",description:"【タッグ】相手に80ダメージ。手札に「終電」があれば終点の向こう側まで行って185ダメージ！",effects:[{action:"combo_damage",requires:"終電",base:80,bonus:185}]},
+{name:"唐揚げ",type:"heal",rank:"A",art:"heal",cost:2,isTag:true,comboTarget:"レモン",description:"【タッグ】HPを70回復。手札に「レモン」があれば勝手にかけられて逆にウマくなり170回復！",effects:[{action:"combo_heal",requires:"レモン",base:70,bonus:170}]},
+{name:"レモン",type:"magic",rank:"B",art:"magic",cost:1,isTag:true,comboTarget:"唐揚げ",description:"【タッグ】相手に50ダメージ。手札に「唐揚げ」があれば「かけるな！」の怒りで追加120ダメージ！",effects:[{action:"damage",value:50},{action:"if_has_damage",requires:"唐揚げ",value:120}]},
+{name:"カレー",type:"heal",rank:"A",art:"heal",cost:2,isTag:true,comboTarget:"福神漬け",description:"【タッグ】HPを80回復。手札に「福神漬け」があれば完全体カレーで175回復！",effects:[{action:"combo_heal",requires:"福神漬け",base:80,bonus:175}]},
+{name:"福神漬け",type:"magic",rank:"B",art:"magic",cost:1,isTag:true,comboTarget:"カレー",description:"【タッグ】1枚ドロー。手札に「カレー」があれば赤い名脇役でコスト+2！",effects:[{action:"draw",value:1},{action:"if_has_cost",requires:"カレー",value:2}]},
+{name:"丑の刻参り",type:"attack",rank:"S",art:"attack",cost:3,isTag:true,comboTarget:"藁人形",description:"【タッグ】夜中の釘打ちで75ダメージ！手札に「藁人形」があれば本気の呪いで190ダメージ！",effects:[{action:"combo_damage",requires:"藁人形",base:75,bonus:190}]},
+{name:"藁人形",type:"magic",rank:"S",art:"magic",cost:2,isTag:true,comboTarget:"丑の刻参り",description:"【タッグ】3T相手が毎ターン40呪いダメージ！手札に「丑の刻参り」があれば1枚ドロー！",effects:[{action:"add_continuous_effect",targetEnemy:true,duration:3,effect:{action:"continuous_damage",value:40}},{action:"if_has_draw",requires:"丑の刻参り",value:1}]},
+{name:"合コン",type:"magic",rank:"A",art:"magic",cost:2,isTag:true,comboTarget:"王様ゲーム",description:"【タッグ】2枚ドロー。手札に「王様ゲーム」があれば盛り上がってコスト+2！",effects:[{action:"draw",value:2},{action:"if_has_cost",requires:"王様ゲーム",value:2}]},
+{name:"王様ゲーム",type:"special",rank:"S",art:"special",cost:2,isTag:true,comboTarget:"合コン",description:"【タッグ】「合コン」を持っていれば王様命令！お互いの手札を丸ごと入れ替える！",effects:[{action:"swap_all_hands_if",requires:"合コン"}]},
+{name:"満員電車",type:"attack",rank:"A",art:"attack",cost:2,isTag:true,comboTarget:"つり革",description:"【タッグ】ぎゅうぎゅう圧力で90ダメージ！手札に「つり革」があれば揺れに任せて190ダメージ！",effects:[{action:"combo_damage",requires:"つり革",base:90,bonus:190}]},
+{name:"つり革",type:"special",rank:"A",art:"special",cost:2,isTag:true,comboTarget:"満員電車",description:"【タッグ】ガード付与。手札に「満員電車」があれば掴まったまま貫通130ダメージ！",effects:[{action:"protect"},{action:"if_has_pierce",requires:"満員電車",value:130}]},
+{name:"充電切れ",type:"special",rank:"B",art:"special",cost:1,isTag:true,comboTarget:"モバイルバッテリー",description:"【タッグ】お互いのコストを0にして2枚ドロー！手札に「モバイルバッテリー」があれば助かったので追加1枚ドロー！",effects:[{action:"reset_all_cost"},{action:"draw",value:2},{action:"if_has_draw",requires:"モバイルバッテリー",value:1}]},
+{name:"モバイルバッテリー",type:"magic",rank:"B",art:"magic",cost:1,isTag:true,comboTarget:"充電切れ",description:"【タッグ】コスト+2。手札に「充電切れ」があれば命の恩人でさらにコスト+4！",effects:[{action:"add_cost",value:2},{action:"if_has_cost",requires:"充電切れ",value:4}]},
+{name:"月曜日",type:"attack",rank:"A",art:"attack",cost:2,isTag:true,comboTarget:"日曜日",description:"【タッグ】絶望の75ダメージ！手札に「日曜日」があれば落差で心が折れて180ダメージ！",effects:[{action:"combo_damage",requires:"日曜日",base:75,bonus:180}]},
+{name:"日曜日",type:"heal",rank:"A",art:"heal",cost:2,isTag:true,comboTarget:"月曜日",description:"【タッグ】HPを80回復。手札に「月曜日」があれば明日から本気出す！ガード付与！",effects:[{action:"heal",value:80},{action:"if_has_protect",requires:"月曜日"}]},
+{name:"ガチャ",type:"magic",rank:"A",art:"magic",cost:2,isTag:true,comboTarget:"天井",description:"【タッグ】候補3枚から1枚選んで手札に加える！手札に「天井」があればコスト+2！",effects:[{action:"pick_from_pool",count:3},{action:"if_has_cost",requires:"天井",value:2}]},
+{name:"天井",type:"special",rank:"S",art:"special",cost:2,isTag:true,comboTarget:"ガチャ",description:"【タッグ】コスト+2。手札に「ガチャ」があれば確定演出でコスト+4＆2枚ドロー！",effects:[{action:"combo_cost_draw",requires:"ガチャ",baseCost:2,bonusCost:4,bonusDraw:2}]},
+{name:"賞味期限",type:"attack",rank:"A",art:"attack",cost:2,isTag:true,comboTarget:"冷蔵庫",description:"【タッグ】期限切れを投げつけて90ダメージ！「冷蔵庫」を持ってないと自分も食べて20ダメージ！",effects:[{action:"damage",value:90},{action:"unless_has_self_dmg",requires:"冷蔵庫",value:20}]},
+{name:"冷蔵庫",type:"heal",rank:"A",art:"heal",cost:2,isTag:true,comboTarget:"賞味期限",description:"【タッグ】HPを70回復。手札に「賞味期限」があれば中身を整理して150回復！",effects:[{action:"combo_heal",requires:"賞味期限",base:70,bonus:150}]},
+{name:"電子レンジ",type:"attack",rank:"S",art:"attack",cost:3,isTag:true,comboTarget:"卵",description:"【タッグ】チンして85ダメージ！手札に「卵」があれば爆発して200ダメージ！",effects:[{action:"combo_damage",requires:"卵",base:85,bonus:200}]},
+{name:"卵",type:"heal",rank:"B",art:"heal",cost:1,isTag:true,comboTarget:"電子レンジ",description:"【タッグ】HPを60回復。手札に「電子レンジ」があれば殻ごと入れて相手に150ダメージ！",effects:[{action:"heal",value:60},{action:"if_has_damage",requires:"電子レンジ",value:150}]},
+{name:"猫",type:"heal",rank:"A",art:"heal",cost:1,isTag:true,comboTarget:"こたつ",description:"【タッグ】HPを60回復＆1枚ドロー。手札に「こたつ」があれば丸くなってコスト+2！",effects:[{action:"heal",value:60},{action:"draw",value:1},{action:"if_has_cost",requires:"こたつ",value:2}]},
+{name:"こたつ",type:"special",rank:"S",art:"special",cost:2,isTag:true,comboTarget:"猫",description:"【タッグ】ガード付与。手札に「猫」があれば出られなくなって相手の次ターンもスキップ！",effects:[{action:"protect"},{action:"if_has_skip",requires:"猫"}]},
+{name:"既読無視",type:"magic",rank:"A",art:"magic",cost:2,isTag:true,comboTarget:"未読無視",description:"【タッグ】相手の次ドローを消す。手札に「未読無視」があれば相手の次ターンもスキップ！",effects:[{action:"rig_opp_next_draw"},{action:"if_has_skip",requires:"未読無視"}]},
+{name:"未読無視",type:"attack",rank:"S",art:"attack",cost:2,isTag:true,comboTarget:"既読無視",description:"【タッグ】相手に80ダメージ。手札に「既読無視」があれば通知200件のプレッシャーで190ダメージ！",effects:[{action:"combo_damage",requires:"既読無視",base:80,bonus:190}]},
+{name:"校長先生",type:"attack",rank:"S",art:"attack",cost:3,isTag:true,comboTarget:"長話",description:"【タッグ】ありがたいお言葉100ダメージ！手札に「長話」があれば全校生徒が倒れて205ダメージ！",effects:[{action:"combo_damage",requires:"長話",base:100,bonus:205}]},
+{name:"長話",type:"magic",rank:"A",art:"magic",cost:2,isTag:true,comboTarget:"校長先生",description:"【タッグ】相手ターンをスキップ。手札に「校長先生」があれば貫通120ダメージ！",effects:[{action:"skip_turn"},{action:"if_has_pierce",requires:"校長先生",value:120}]},
+{name:"隕石",type:"attack",rank:"SS",art:"attack",cost:5,description:"空から恐竜絶滅級が降ってきた！相手に200ダメージ。自分も余波で40ダメージ。",effects:[{action:"damage",value:200},{action:"self_damage",value:40}]},
+{name:"割り箸",type:"attack",rank:"C",art:"attack",cost:1,description:"パキッと割れて相手に40ダメージ。きれいに割れた！",effects:[{action:"damage",value:40}]},
+{name:"ハエ叩き",type:"attack",rank:"B",art:"attack",cost:1,description:"スパァン！相手に60ダメージ。",effects:[{action:"damage",value:60}]},
+{name:"回転寿司",type:"attack",rank:"A",art:"attack",cost:2,description:"皿が高速で飛んでくる！相手に80ダメージ＆自分は食べてHP30回復。",effects:[{action:"damage",value:80},{action:"heal",value:30}]},
+{name:"逆ギレ",type:"attack",rank:"A",art:"attack",cost:2,description:"失ったHPの30%を相手に叩きつける！ボロボロなほど痛い。",effects:[{action:"revenge",mult:0.3}]},
+{name:"全財産",type:"attack",rank:"S",art:"attack",cost:2,description:"持ってるコスト全部をぶっ放す！残りコスト×30ダメージ（コストは0になる）。",effects:[{action:"cost_burst",mult:30}]},
+{name:"大掃除",type:"attack",rank:"A",art:"attack",cost:2,description:"年末の大掃除！相手に50ダメージ＆相手の手札をランダムに2枚捨てさせる。",effects:[{action:"damage",value:50},{action:"discard_opp_random",value:2}]},
+{name:"断捨離",type:"special",rank:"S",art:"special",cost:2,description:"ときめかないものは捨てる！相手の手札をランダムに3枚捨てさせる。",effects:[{action:"discard_opp_random",value:3}]},
+{name:"空き缶",type:"attack",rank:"D",art:"attack",cost:0,description:"コスト0の空き缶。相手に20ダメージ。カラン。",effects:[{action:"damage",value:20}]},
+{name:"目覚まし時計",type:"attack",rank:"A",art:"attack",cost:2,description:"爆音アラーム！相手に60ダメージ＆次ドローを消す。",effects:[{action:"damage",value:60},{action:"rig_opp_next_draw"}]},
+{name:"満月",type:"attack",rank:"SS",art:"attack",cost:4,description:"月の力が溢れる！相手に140ダメージ＆HP70回復。",effects:[{action:"damage",value:140},{action:"heal",value:70}]},
+{name:"巨大ロボ",type:"attack",rank:"SS",art:"attack",cost:5,description:"なぜか合体した！相手に190ダメージ＆ガード付与。",effects:[{action:"damage",value:190},{action:"protect"}]},
+{name:"納豆ミサイル",type:"attack",rank:"S",art:"attack",cost:3,description:"ネバネバ発射！相手に110ダメージ＆2T毎ターン30ダメージ。",effects:[{action:"damage",value:110},{action:"add_continuous_effect",targetEnemy:true,duration:2,effect:{action:"continuous_damage",value:30}}]},
+{name:"炎上",type:"attack",rank:"S",art:"attack",cost:3,description:"SNSが大炎上！相手に40ダメージ＆3T毎ターン55ダメージ。",effects:[{action:"damage",value:40},{action:"add_continuous_effect",targetEnemy:true,duration:3,effect:{action:"continuous_damage",value:55}}]},
+{name:"自転車泥棒",type:"attack",rank:"A",art:"attack",cost:2,description:"他人の自転車で逃走！相手に50ダメージ＆手札を1枚奪う。",effects:[{action:"damage",value:50},{action:"steal_random_hand"}]},
+{name:"無職の一撃",type:"attack",rank:"B",art:"attack",cost:1,description:"失うものがない人は強い。相手に65ダメージ。",effects:[{action:"damage",value:65}]},
+{name:"温泉",type:"heal",rank:"A",art:"heal",cost:2,description:"ふぅ〜極楽！HPを100回復＆コスト+1。",effects:[{action:"heal",value:100},{action:"add_cost",value:1}]},
+{name:"母の味",type:"heal",rank:"S",art:"heal",cost:3,description:"実家の安心感！HPを140回復＆ガード付与。",effects:[{action:"heal",value:140},{action:"protect"}]},
+{name:"お昼寝",type:"heal",rank:"B",art:"heal",cost:1,description:"15分だけのつもりが…HPを70回復。",effects:[{action:"heal",value:70}]},
+{name:"サウナ",type:"heal",rank:"A",art:"heal",cost:2,description:"ととのった！HPを120回復＆コスト+1。",effects:[{action:"heal",value:120},{action:"add_cost",value:1}]},
+{name:"点滴",type:"heal",rank:"B",art:"heal",cost:1,description:"ポタポタ回復。3T毎ターン開始時にHP35回復。",effects:[{action:"add_continuous_effect",targetEnemy:false,duration:3,effect:{action:"continuous_heal",value:35}}]},
+{name:"ドーナツの穴",type:"heal",rank:"D",art:"heal",cost:0,description:"穴だけ食べた気分でHP40回復。",effects:[{action:"heal",value:40}]},
+{name:"無限おかわり",type:"heal",rank:"SS",art:"heal",cost:4,description:"食べ放題！手札の枚数×30HP回復＆1枚ドロー。",effects:[{action:"hand_heal",mult:30},{action:"draw",value:1}]},
+{name:"世界樹の雫",type:"heal",rank:"SS",art:"heal",cost:4,description:"神秘の一滴！HPを170回復＆ガード付与。",effects:[{action:"heal",value:170},{action:"protect"}]},
+{name:"ばあちゃんのおにぎり",type:"heal",rank:"A",art:"heal",cost:2,description:"でかすぎる！HPを90回復＆1枚ドロー。",effects:[{action:"heal",value:90},{action:"draw",value:1}]},
+{name:"満腹中枢",type:"special",rank:"B",art:"special",cost:1,description:"もう入らない…ガード付与＆HP60回復。",effects:[{action:"protect"},{action:"heal",value:60}]},
+{name:"宿題やった？",type:"magic",rank:"A",art:"magic",cost:2,description:"痛いところを突く！相手に60ダメージ＆相手はカードを1枚引く（現実逃避）。",effects:[{action:"damage",value:60},{action:"opp_draw",value:1}]},
+{name:"黒歴史",type:"magic",rank:"S",art:"magic",cost:2,description:"深夜のポエムを発掘！相手の手札を3枚覗いて40ダメージ。",effects:[{action:"peek_opp_hand",count:3},{action:"damage",value:40}]},
+{name:"ブロック",type:"special",rank:"B",art:"special",cost:1,description:"ブロックした！ガードを付与する。",effects:[{action:"protect"}]},
+{name:"神回避",type:"special",rank:"A",art:"special",cost:2,description:"紙一重で避ける！ガード付与＆HP40回復。",effects:[{action:"protect"},{action:"heal",value:40}]},
+{name:"錬金術",type:"magic",rank:"S",art:"magic",cost:3,description:"鉛をカードに変える！候補3枚から1枚選んで手札に加え、コスト+1。",effects:[{action:"pick_from_pool",count:3},{action:"add_cost",value:1}]},
+{name:"福袋",type:"magic",rank:"A",art:"magic",cost:2,description:"中身は開けてのお楽しみ！カードを3枚引く。",effects:[{action:"draw",value:3}]},
+{name:"質屋",type:"magic",rank:"B",art:"magic",cost:1,description:"大事なものを売ってコスト+3。でも心が痛くて自分に30ダメージ。",effects:[{action:"add_cost",value:3},{action:"self_damage",value:30}]},
+{name:"献血",type:"magic",rank:"A",art:"magic",cost:2,description:"ちょっと抜いて元気に！自分に40ダメージを受けてコスト+4＆1枚ドロー。",effects:[{action:"self_damage",value:40},{action:"add_cost",value:4},{action:"draw",value:1}]},
+{name:"丁半",type:"magic",rank:"A",art:"magic",cost:2,description:"丁か半か！50%で相手に150ダメージ、50%で自分に50ダメージ。",effects:[{action:"chohan"}]},
+{name:"宝くじ",type:"magic",rank:"S",art:"magic",cost:2,description:"夢を買う！10%で相手に250ダメージ。外れたらHP20回復。",effects:[{action:"lottery"}]},
+{name:"バグ技",type:"special",rank:"SS",art:"special",cost:4,description:"裏技発動！手札のコストを全部1にして2枚ドロー。",effects:[{action:"hack_hand_cost_1"},{action:"draw",value:2}]},
+{name:"強制ログアウト",type:"special",rank:"S",art:"special",cost:3,description:"回線切断！相手の次ターンをスキップし、お互いのコストを0にする。",effects:[{action:"skip_turn"},{action:"reset_all_cost"}]},
+{name:"課金",type:"magic",rank:"A",art:"magic",cost:2,description:"財布が泣いてる！自分に50ダメージ＆コスト+4。",effects:[{action:"self_damage",value:50},{action:"add_cost",value:4}]},
+{name:"無課金",type:"special",rank:"D",art:"special",cost:0,description:"コスト0！ただ祈って1枚ドロー。",effects:[{action:"draw",value:1}]},
+{name:"時間停止",type:"special",rank:"SS",art:"special",cost:5,description:"ザ・ワールド！相手の次ターンをスキップ＆2枚ドロー＆ガード付与。",effects:[{action:"skip_turn"},{action:"draw",value:2},{action:"protect"}]},
+{name:"手のひら返し",type:"special",rank:"S",art:"special",cost:3,description:"昨日の味方は今日の敵！HPが低ければ入れ替え、相手の手札も1枚奪う。",effects:[{action:"swap_hp_if_lower"},{action:"steal_random_hand"}]},
+{name:"山びこ",type:"attack",rank:"A",art:"attack",cost:2,description:"ヤッホー！…ヤッホー！二連続で60ダメージ×2。",effects:[{action:"damage",value:60},{action:"damage",value:60}]},
+{name:"三日坊主",type:"magic",rank:"C",art:"magic",cost:1,description:"3日で飽きる。1枚ドロー＆相手に30ダメージ。",effects:[{action:"draw",value:1},{action:"damage",value:30}]},
+{name:"沼",type:"magic",rank:"A",art:"magic",cost:2,description:"どっぷりハマる！3T毎ターン40ダメージ＆次ドローを消す。",effects:[{action:"add_continuous_effect",targetEnemy:true,duration:3,effect:{action:"continuous_damage",value:40}},{action:"rig_opp_next_draw"}]},
+{name:"ゴミ屋敷",type:"magic",rank:"A",art:"magic",cost:2,description:"相手の手札にゴミを2枚押し付ける！",effects:[{action:"give_trash",value:2}]},
+{name:"ポイ捨て",type:"magic",rank:"B",art:"magic",cost:1,description:"ポイッ！相手に45ダメージ＆ゴミを1枚押し付ける。",effects:[{action:"damage",value:45},{action:"give_trash",value:1}]},
+{"name": "気の所為じゃねぇ、、", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "isTag": true, "comboTarget": "ジリジリ後ろから来てる、、！", "description": "【タッグ】相手の手札を2枚覗く。手札に「ジリジリ後ろから来てる、、！」があれば背後の気配に気づきガード付与＆コスト+2！", "effects": [{"action": "peek_opp_hand", "count": 2}, {"action": "if_has_cost_protect", "requires": "ジリジリ後ろから来てる、、！", "cost": 2}]},
+{"name": "ジリジリ後ろから来てる、、！", "type": "attack", "rank": "S", "art": "attack", "cost": 2, "isTag": true, "comboTarget": "気の所為じゃねぇ、、", "description": "【タッグ】背後から急接近して85ダメージ！手札に「気の所為じゃねぇ、、」があればホラー展開で190ダメージ！", "effects": [{"action": "combo_damage", "requires": "気の所為じゃねぇ、、", "base": 85, "bonus": 190}]},
+{"name": "おほほ", "type": "heal", "rank": "A", "art": "heal", "cost": 2, "isTag": true, "comboTarget": "うふふ", "description": "【タッグ】お上品にHP80回復。手札に「うふふ」があれば高笑い共鳴で175回復＆1枚ドロー！", "effects": [{"action": "combo_heal", "requires": "うふふ", "base": 80, "bonus": 175}, {"action": "if_has_draw", "requires": "うふふ", "value": 1}]},
+{"name": "うふふ", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "isTag": true, "comboTarget": "おほほ", "description": "【タッグ】2枚ドロー。手札に「おほほ」があれば余裕の笑みで相手に145ダメージ！", "effects": [{"action": "draw", "value": 2}, {"action": "if_has_damage", "requires": "おほほ", "value": 145}]},
+{"name": "S", "type": "attack", "rank": "S", "art": "attack", "cost": 2, "isTag": true, "comboTarget": "A,B,C！", "description": "【タッグ】最高ランクSの風格で95ダメージ！手札に「A,B,C！」があればランク総動員で195ダメージ！", "effects": [{"action": "combo_damage", "requires": "A,B,C！", "base": 95, "bonus": 195}]},
+{"name": "A,B,C！", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "isTag": true, "comboTarget": "S", "description": "【タッグ】3枚ドロー！手札に「S」があればオールランク制覇でコスト+3！", "effects": [{"action": "draw", "value": 3}, {"action": "if_has_cost", "requires": "S", "value": 3}]},
+{"name": "ぼんちょりん", "type": "special", "rank": "S", "art": "special", "cost": 2, "isTag": true, "comboTarget": "ちょんぼりん", "description": "【タッグ】ガード付与＆1枚ドロー。「ちょんぼりん」を持っていればHP入れ替えも同時発動！", "effects": [{"action": "protect"}, {"action": "draw", "value": 1}, {"action": "if_has_swap_hp", "requires": "ちょんぼりん"}]},
+{"name": "りんぼりん", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "isTag": true, "comboTarget": "らんぼりん", "description": "【タッグ】相手手札1枚奪う。「らんぼりん」を持っていればコスト+3！", "effects": [{"action": "steal_random_hand"}, {"action": "if_has_cost", "requires": "らんぼりん", "value": 3}]},
+{"name": "らんぼりん", "type": "attack", "rank": "S", "art": "attack", "cost": 2, "isTag": true, "comboTarget": "りんぼりん", "description": "【タッグ】カオス乱舞で85ダメージ！「りんぼりん」を持っていれば185ダメージに暴走！", "effects": [{"action": "combo_damage", "requires": "りんぼりん", "base": 85, "bonus": 185}]},
+{"name": "無視", "type": "special", "rank": "A", "art": "special", "cost": 2, "isTag": true, "comboTarget": "虫", "description": "【タッグ】相手を完全スルーしてガード付与＆次ドロー消失！手札に「虫」があればコスト+2！", "effects": [{"action": "protect"}, {"action": "rig_opp_next_draw"}, {"action": "if_has_cost", "requires": "虫", "value": 2}]},
+{"name": "虫", "type": "magic", "rank": "B", "art": "magic", "cost": 1, "isTag": true, "comboTarget": "無視", "description": "【タッグ】ブーンと飛んで55ダメージ！手札に「無視」があれば羽音ストレスで追加115ダメージ！", "effects": [{"action": "damage", "value": 55}, {"action": "if_has_damage", "requires": "無視", "value": 115}]},
+{"name": "ベーシスト", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "isTag": true, "comboTarget": "ドラマー", "description": "【タッグ】重低音グルーヴでコスト+2＆1枚ドロー！手札に「ドラマー」があればリズム隊覚醒でガード付与！", "effects": [{"action": "add_cost", "value": 2}, {"action": "draw", "value": 1}, {"action": "if_has_protect", "requires": "ドラマー"}]},
+{"name": "ドラマー", "type": "attack", "rank": "A", "art": "attack", "cost": 2, "isTag": true, "comboTarget": "ベーシスト", "description": "【タッグ】爆裂ドラムロールで85ダメージ！手札に「ベーシスト」があれば完璧なリズムで180ダメージ！", "effects": [{"action": "combo_damage", "requires": "ベーシスト", "base": 85, "bonus": 180}]},
+{"name": "ギタリスト", "type": "attack", "rank": "S", "art": "attack", "cost": 2, "isTag": true, "comboTarget": "エレキギター", "description": "【タッグ】速弾きソロで90ダメージ！手札に「エレキギター」があればアンプ全開で195ダメージ！", "effects": [{"action": "combo_damage", "requires": "エレキギター", "base": 90, "bonus": 195}]},
+{"name": "エレキギター", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "isTag": true, "comboTarget": "ギタリスト", "description": "【タッグ】ディストーション炸裂！2枚ドロー。手札に「ギタリスト」があればコスト+3！", "effects": [{"action": "draw", "value": 2}, {"action": "if_has_cost", "requires": "ギタリスト", "value": 3}]},
+{"name": "テロリスト", "type": "attack", "rank": "SS", "art": "attack", "cost": 4, "description": "危険物投下！相手に165ダメージ＆相手手札を2枚捨てさせるが、自分も35ダメージ。", "effects": [{"action": "damage", "value": 165}, {"action": "discard_opp_random", "value": 2}, {"action": "self_damage", "value": 35}]},
+{"name": "槍", "type": "attack", "rank": "B", "art": "attack", "cost": 1, "isTag": true, "comboTarget": "ロンギヌスの槍", "description": "【タッグ】鋭い突きで65ダメージ！手札に「ロンギヌスの槍」があれば二本槍で165ダメージ！", "effects": [{"action": "combo_damage", "requires": "ロンギヌスの槍", "base": 65, "bonus": 165}]},
+{"name": "スカーレットの槍", "type": "attack", "rank": "SS", "art": "attack", "cost": 4, "isTag": true, "comboTarget": "ハフィロスの槍", "description": "【タッグ】深紅の閃光135ダメージ！手札に「ハフィロスの槍」があれば双槍共鳴で220ダメージ＆HP60回復！", "effects": [{"action": "combo_damage", "requires": "ハフィロスの槍", "base": 135, "bonus": 220}, {"action": "heal", "value": 60}]},
+{"name": "ハフィロスの槍", "type": "attack", "rank": "SS", "art": "attack", "cost": 4, "isTag": true, "comboTarget": "スカーレットの槍", "description": "【タッグ】蒼銀の聖槍でガード貫通130ダメージ！手札に「スカーレットの槍」があれば貫通210ダメージ＆ガード付与！", "effects": [{"action": "combo_pierce", "requires": "スカーレットの槍", "base": 130, "bonus": 210}, {"action": "if_has_protect", "requires": "スカーレットの槍"}]},
+{"name": "ゲーム機", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "isTag": true, "comboTarget": "PS5", "description": "【タッグ】夜更かしプレイで2枚ドロー！手札に「PS5」があれば次世代機パワーでコスト+3！", "effects": [{"action": "draw", "value": 2}, {"action": "if_has_cost", "requires": "PS5", "value": 3}]},
+{"name": "PS5", "type": "attack", "rank": "SS", "art": "attack", "cost": 3, "isTag": true, "comboTarget": "ゲーム機", "description": "【タッグ】超高速ロードで110ダメージ！手札に「ゲーム機」があればレイトレーシング炸裂205ダメージ！", "effects": [{"action": "combo_damage", "requires": "ゲーム機", "base": 110, "bonus": 205}]},
+{"name": "雷", "type": "attack", "rank": "A", "art": "attack", "cost": 2, "isTag": true, "comboTarget": "風", "description": "【タッグ】落雷直撃90ダメージ！手札に「風」があれば雷神風神コンボで190ダメージ！", "effects": [{"action": "combo_damage", "requires": "風", "base": 90, "bonus": 190}]},
+{"name": "風", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "isTag": true, "comboTarget": "雷", "description": "【タッグ】疾風で相手手札1枚奪う＆1枚ドロー！手札に「雷」があればコスト+2！", "effects": [{"action": "steal_random_hand"}, {"action": "draw", "value": 1}, {"action": "if_has_cost", "requires": "雷", "value": 2}]},
+{"name": "白い恋人", "type": "heal", "rank": "A", "art": "heal", "cost": 2, "isTag": true, "comboTarget": "黒い恋人", "description": "【タッグ】北海道の甘さでHP85回復！手札に「黒い恋人」があれば禁断のW恋人で180回復＆ガード！", "effects": [{"action": "combo_heal", "requires": "黒い恋人", "base": 85, "bonus": 180}, {"action": "if_has_protect", "requires": "黒い恋人"}]},
+{"name": "黒い恋人", "type": "attack", "rank": "A", "art": "attack", "cost": 2, "isTag": true, "comboTarget": "白い恋人", "description": "【タッグ】謎の対抗心で85ダメージ！手札に「白い恋人」があれば恋人同士の修羅場で185ダメージ！", "effects": [{"action": "combo_damage", "requires": "白い恋人", "base": 85, "bonus": 185}]},
+{"name": "とりあえずまぁ", "type": "magic", "rank": "B", "art": "magic", "cost": 1, "isTag": true, "comboTarget": "まぁ、とりあえず", "description": "【タッグ】1枚ドロー＆コスト+1。手札に「まぁ、とりあえず」があれば流れに任せてさらに2枚ドロー！", "effects": [{"action": "draw", "value": 1}, {"action": "add_cost", "value": 1}, {"action": "if_has_draw", "requires": "まぁ、とりあえず", "value": 2}]},
+{"name": "まぁ、とりあえず", "type": "heal", "rank": "B", "art": "heal", "cost": 1, "isTag": true, "comboTarget": "とりあえずまぁ", "description": "【タッグ】HP65回復。手札に「とりあえずまぁ」があれば一旦落ち着いて155回復＆ガード！", "effects": [{"action": "combo_heal", "requires": "とりあえずまぁ", "base": 65, "bonus": 155}, {"action": "if_has_protect", "requires": "とりあえずまぁ"}]},
+{"name": "東京", "type": "attack", "rank": "S", "art": "attack", "cost": 3, "isTag": true, "comboTarget": "北京", "description": "【タッグ】メガロポリス砲115ダメージ！手札に「北京」があればアジア二大都市タッグで210ダメージ！", "effects": [{"action": "combo_damage", "requires": "北京", "base": 115, "bonus": 210}]},
+{"name": "北京", "type": "special", "rank": "S", "art": "special", "cost": 3, "isTag": true, "comboTarget": "東京", "description": "【タッグ】万里の防壁でガード付与＆HP90回復！手札に「東京」があればコスト+3＆1枚ドロー！", "effects": [{"action": "protect"}, {"action": "heal", "value": 90}, {"action": "if_has_cost_draw", "requires": "東京", "cost": 3, "draw": 1}]},
+{"name": "破壊光線-ラブビーム", "type": "attack", "rank": "SS", "art": "attack", "cost": 4, "isTag": true, "comboTarget": "壊滅光線-冷凍ビーム", "description": "【タッグ】愛の破壊光線で140ダメージ＆HP60回復！手札に「壊滅光線-冷凍ビーム」があれば225ダメージ！", "effects": [{"action": "combo_damage", "requires": "壊滅光線-冷凍ビーム", "base": 140, "bonus": 225}, {"action": "heal", "value": 60}]},
+{"name": "壊滅光線-冷凍ビーム", "type": "attack", "rank": "SS", "art": "attack", "cost": 4, "isTag": true, "comboTarget": "破壊光線-ラブビーム", "description": "【タッグ】絶対零度の壊滅光線で130ダメージ＆相手スキップ！手札に「破壊光線-ラブビーム」があれば215ダメージ！", "effects": [{"action": "combo_damage", "requires": "破壊光線-ラブビーム", "base": 130, "bonus": 215}, {"action": "skip_turn"}]},
+{"name": "いざ参る", "type": "attack", "rank": "A", "art": "attack", "cost": 2, "description": "武士の気合で突撃！相手に95ダメージ＆自分にガード付与。", "effects": [{"action": "damage", "value": 95}, {"action": "protect"}]},
+{"name": "しろくま", "type": "heal", "rank": "S", "art": "heal", "cost": 3, "description": "冷たくてふわふわ！HPを130回復し、相手を冷やして次ドローを消す。", "effects": [{"action": "heal", "value": 130}, {"action": "rig_opp_next_draw"}]},
+{"name": "土", "type": "special", "rank": "D", "art": "special", "cost": 0, "description": "コスト0のただの土。でもなんか落ち着いてHP25回復＆ガード付与！", "effects": [{"action": "heal", "value": 25}, {"action": "protect"}]},
+{"name": "Twitterのあの鳥", "type": "magic", "rank": "S", "art": "magic", "cost": 2, "description": "青い鳥が飛び立った！2枚ドロー＆相手の手札を2枚覗き見する。", "effects": [{"action": "draw", "value": 2}, {"action": "peek_opp_hand", "count": 2}]},
+{"name": "グミ", "type": "heal", "rank": "C", "art": "heal", "cost": 1, "description": "ぷにぷに食感！HPを55回復＆コスト+1。", "effects": [{"action": "heal", "value": 55}, {"action": "add_cost", "value": 1}]},
+{"name": "鋭い！", "type": "attack", "rank": "A", "art": "attack", "cost": 2, "description": "急所を突く一閃！ガード貫通で85ダメージを与える。", "effects": [{"action": "pierce_damage", "value": 85}]},
+{"name": "ハシビロコウ", "type": "special", "rank": "S", "art": "special", "cost": 3, "description": "微動だにしない威圧感…相手の次ターンをスキップする！", "effects": [{"action": "skip_turn"}]},
+{"name": "ラーメン", "type": "heal", "rank": "A", "art": "heal", "cost": 2, "description": "スープまで完飲！HPを105回復し、カードを1枚引く。", "effects": [{"action": "heal", "value": 105}, {"action": "draw", "value": 1}]},
+{"name": "寺", "type": "special", "rank": "A", "art": "special", "cost": 2, "description": "除夜の鐘で煩悩消滅！HP90回復＆ガード付与。", "effects": [{"action": "heal", "value": 90}, {"action": "protect"}]},
+{"name": "ダブル盾", "type": "special", "rank": "S", "art": "special", "cost": 2, "description": "鉄壁の二枚構え！ガード付与＆HP75回復＆1枚ドロー。", "effects": [{"action": "protect"}, {"action": "heal", "value": 75}, {"action": "draw", "value": 1}]},
+{"name": "トランペット", "type": "attack", "rank": "A", "art": "attack", "cost": 2, "description": "ファンファーレ爆音！相手に90ダメージ＆コスト+1。", "effects": [{"action": "damage", "value": 90}, {"action": "add_cost", "value": 1}]},
+{"name": "クモ", "type": "magic", "rank": "B", "art": "magic", "cost": 1, "description": "糸で絡め取る！相手の手札からランダムに1枚奪う。", "effects": [{"action": "steal_random_hand"}]},
+{"name": "ペリカン", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "description": "でっかいクチバシで丸呑み！相手手札1枚奪い、自分はHP50回復。", "effects": [{"action": "steal_random_hand"}, {"action": "heal", "value": 50}]},
+{"name": "キンチョレイヌ", "type": "attack", "rank": "S", "art": "attack", "cost": 3, "description": "謎の犬が全力噛みつき！相手に135ダメージ！", "effects": [{"action": "damage", "value": 135}]},
+{"name": "アイス", "type": "heal", "rank": "B", "art": "heal", "cost": 1, "description": "ひんやり美味しい！HPを65回復。", "effects": [{"action": "heal", "value": 65}]},
+{"name": "助け舟", "type": "magic", "rank": "S", "art": "magic", "cost": 2, "description": "ピンチに駆けつける！候補3枚から1枚選んで手札に加え、HP60回復。", "effects": [{"action": "pick_from_pool", "count": 3}, {"action": "heal", "value": 60}]},
+{"name": "ピストル", "type": "attack", "rank": "A", "art": "attack", "cost": 2, "description": "パンッ！相手に95ダメージ。", "effects": [{"action": "damage", "value": 95}]},
+{"name": "エレクトリカルエディション", "type": "special", "rank": "SS", "art": "special", "cost": 4, "description": "電脳光線バースト！相手に145ダメージ＆コスト+3＆1枚ドロー！", "effects": [{"action": "damage", "value": 145}, {"action": "add_cost", "value": 3}, {"action": "draw", "value": 1}]},
+{"name": "チュロス", "type": "heal", "rank": "B", "art": "heal", "cost": 1, "description": "テーマパーク気分！HPを60回復＆1枚ドロー。", "effects": [{"action": "heal", "value": 60}, {"action": "draw", "value": 1}]},
+{"name": "バイオリン", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "description": "優雅な音色でHP80回復＆コスト+2。", "effects": [{"action": "heal", "value": 80}, {"action": "add_cost", "value": 2}]},
+{"name": "ドーナツ", "type": "heal", "rank": "B", "art": "heal", "cost": 1, "description": "甘い輪っか！HPを70回復。", "effects": [{"action": "heal", "value": 70}]},
+{"name": "小石", "type": "attack", "rank": "D", "art": "attack", "cost": 0, "description": "コスト0の小石を投げる！相手に25ダメージ。地味に痛い。", "effects": [{"action": "damage", "value": 25}]},
+{"name": "すまん、一旦食らってくれ", "type": "attack", "rank": "S", "art": "attack", "cost": 3, "description": "謝りながらガード貫通の125ダメージを叩き込む！", "effects": [{"action": "pierce_damage", "value": 125}]},
+{"name": "你好！你好！", "type": "magic", "rank": "B", "art": "magic", "cost": 1, "description": "元気な挨拶！お互いにカードを2枚ずつ引く。", "effects": [{"action": "draw", "value": 2}, {"action": "opp_draw", "value": 2}]},
+{"name": "アラジンのように", "type": "magic", "rank": "SS", "art": "magic", "cost": 4, "description": "ランプの魔人召喚！候補3枚から1枚選び、コスト+4＆ガード付与！", "effects": [{"action": "pick_from_pool", "count": 3}, {"action": "add_cost", "value": 4}, {"action": "protect"}]},
+{"name": "うちわ", "type": "magic", "rank": "B", "art": "magic", "cost": 1, "description": "パタパタ仰いで風を起こす！1枚ドロー＆相手に35ダメージ。", "effects": [{"action": "draw", "value": 1}, {"action": "damage", "value": 35}]},
+{"name": "凱旋門", "type": "special", "rank": "S", "art": "special", "cost": 3, "description": "堂々たる凱旋！HPを120回復し、ガードを付与する。", "effects": [{"action": "heal", "value": 120}, {"action": "protect"}]},
+{"name": "ピザ", "type": "heal", "rank": "A", "art": "heal", "cost": 2, "description": "チーズとろ〜り！HPを100回復＆コスト+1。", "effects": [{"action": "heal", "value": 100}, {"action": "add_cost", "value": 1}]},
+{"name": "肉", "type": "heal", "rank": "A", "art": "heal", "cost": 2, "description": "パワーの源！HPを110回復！", "effects": [{"action": "heal", "value": 110}]},
+{"name": "AK-47", "type": "attack", "rank": "SS", "art": "attack", "cost": 4, "description": "フルオート連射！ガード貫通の155ダメージを叩き込む！", "effects": [{"action": "pierce_damage", "value": 155}]},
+{"name": "メガネ", "type": "magic", "rank": "B", "art": "magic", "cost": 1, "description": "クイッと上げて分析完了！相手の手札を3枚覗き見＆1枚ドロー。", "effects": [{"action": "peek_opp_hand", "count": 3}, {"action": "draw", "value": 1}]},
+{"name": "頑張れブレーキング！", "type": "attack", "rank": "S", "art": "attack", "cost": 3, "description": "フルブレーキング突っ込み！相手に135ダメージ＆ガード付与！", "effects": [{"action": "damage", "value": 135}, {"action": "protect"}]},
+{"name": "よし！", "type": "magic", "rank": "B", "art": "magic", "cost": 1, "description": "気合十分！コスト+2＆1枚ドロー。", "effects": [{"action": "add_cost", "value": 2}, {"action": "draw", "value": 1}]},
+{"name": "歌声を聞かせてべいびー", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "description": "熱唱ライブ！相手に70ダメージ＆相手の手札を2枚捨てさせる。", "effects": [{"action": "damage", "value": 70}, {"action": "discard_opp_random", "value": 2}]},
+{"name": "君も友達になろうぜ", "type": "special", "rank": "S", "art": "special", "cost": 3, "description": "強制フレンド申請！お互いのHPを平均化し、相手手札を1枚奪う。", "effects": [{"action": "equalize_hp"}, {"action": "steal_random_hand"}]},
+{"name": "こたつ", "type": "heal", "rank": "B", "art": "heal", "cost": 1, "isTag": true, "comboTarget": "暖房お姉さん", "description": "【タッグ】ぬくぬく包まれてHP70回復。手札に「暖房お姉さん」があればW暖房で170回復＆ガード！", "effects": [{"action": "combo_heal", "requires": "暖房お姉さん", "base": 70, "bonus": 170}, {"action": "if_has_protect", "requires": "暖房お姉さん"}]},
+{"name": "暖房お姉さん", "type": "heal", "rank": "A", "art": "heal", "cost": 2, "isTag": true, "comboTarget": "こたつ", "description": "【タッグ】ぽかぽかお世話でHP85回復＆1枚ドロー。手札に「こたつ」があれば極楽暖房で180回復！", "effects": [{"action": "combo_heal", "requires": "こたつ", "base": 85, "bonus": 180}, {"action": "draw", "value": 1}]},
+{"name": "冷房", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "description": "ひんやり全開！HP45回復＆1枚ドロー。相手の勢いも冷まして次ドローを消す。", "effects": [{"action": "heal", "value": 45}, {"action": "draw", "value": 1}, {"action": "rig_opp_next_draw"}]},
+{"name": "トイレットペーパー", "type": "heal", "rank": "B", "art": "heal", "cost": 1, "description": "ピンチの必需品！HP60回復。ついでに1枚ドロー（芯まで使い切る）。", "effects": [{"action": "heal", "value": 60}, {"action": "draw", "value": 1}]},
+{"name": "心理戦マジック", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "description": "読み合い開始！相手の手札を3枚覗き、次ドローを消すブラフをかける。", "effects": [{"action": "peek_opp_hand", "count": 3}, {"action": "rig_opp_next_draw"}]},
+{"name": "スーパーチャット", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "description": "スパチャ投下！コスト+3＆1枚ドロー＆HP40回復。推しは全力で応援する。", "effects": [{"action": "add_cost", "value": 3}, {"action": "draw", "value": 1}, {"action": "heal", "value": 40}]},
+{"name": "前奏曲", "type": "magic", "rank": "B", "art": "magic", "cost": 1, "isTag": true, "comboTarget": "スティックトリック-SHOWTIME", "description": "【タッグ】静かな始まり。コスト+2＆1枚ドロー。手札に「スティックトリック-SHOWTIME」があれば開演準備でさらに2枚ドロー！", "effects": [{"action": "add_cost", "value": 2}, {"action": "draw", "value": 1}, {"action": "if_has_draw", "requires": "スティックトリック-SHOWTIME", "value": 2}]},
+{"name": "取っ手を取ってー！", "type": "magic", "rank": "B", "art": "magic", "cost": 1, "description": "取っ手ごと持っていく！相手の手札を1枚奪い、HP35回復。", "effects": [{"action": "steal_random_hand"}, {"action": "heal", "value": 35}]},
+{"name": "飲酒運転", "type": "attack", "rank": "A", "art": "attack", "cost": 2, "description": "ダメ、絶対。フラフラ運転で相手に90ダメージ！ただし自分も40ダメージ。", "effects": [{"action": "damage", "value": 90}, {"action": "self_damage", "value": 40}]},
+{"name": "警察官", "type": "attack", "rank": "A", "art": "attack", "cost": 2, "isTag": true, "comboTarget": "ポリスマン", "description": "【タッグ】職務質問！相手に75ダメージ＆手札1枚捨てさせる。手札に「ポリスマン」があればW警察で175ダメージ！", "effects": [{"action": "combo_damage", "requires": "ポリスマン", "base": 75, "bonus": 175}, {"action": "discard_opp_random", "value": 1}]},
+{"name": "ポリスマン", "type": "attack", "rank": "A", "art": "attack", "cost": 2, "isTag": true, "comboTarget": "警察官", "description": "【タッグ】POLICE参上！相手に75ダメージ。手札に「警察官」があればダブル取締りでガード貫通160ダメージ！", "effects": [{"action": "combo_pierce", "requires": "警察官", "base": 75, "bonus": 160}]},
+{"name": "警察署", "type": "special", "rank": "S", "art": "special", "cost": 3, "description": "本署から応援到着！HP90回復＆ガード付与＆1枚ドロー。正義の拠点は固い。", "effects": [{"action": "heal", "value": 90}, {"action": "protect"}, {"action": "draw", "value": 1}]},
+{"name": "消防マン", "type": "heal", "rank": "A", "art": "heal", "cost": 2, "description": "消火＆救助完了！HP105回復＆ガード付与。燃え上がる戦況を鎮火する。", "effects": [{"action": "heal", "value": 105}, {"action": "protect"}]},
+{"name": "一撃必殺", "type": "attack", "rank": "SS", "art": "attack", "cost": 4, "description": "全てを賭けた一撃！ガード貫通170ダメージ！ただし反動で自分も30ダメージ。", "effects": [{"action": "pierce_damage", "value": 170}, {"action": "self_damage", "value": 30}]},
+{"name": "ワンショット", "type": "attack", "rank": "S", "art": "attack", "cost": 3, "description": "一発勝負！相手に130ダメージ。外せない場面で決める！", "effects": [{"action": "damage", "value": 130}]},
+{"name": "惑星", "type": "magic", "rank": "S", "art": "magic", "cost": 3, "isTag": true, "comboTarget": "土星", "description": "【タッグ】惑星の力でHP80回復＆コスト+2。手札に「土星」があれば軌道共鳴でさらに2枚ドロー！", "effects": [{"action": "heal", "value": 80}, {"action": "add_cost", "value": 2}, {"action": "if_has_draw", "requires": "土星", "value": 2}]},
+{"name": "土星", "type": "heal", "rank": "A", "art": "heal", "cost": 2, "isTag": true, "comboTarget": "惑星", "description": "【タッグ】輪っかの守りでHP90回復。手札に「惑星」があれば土星パワーで165回復＆ガード！", "effects": [{"action": "combo_heal", "requires": "惑星", "base": 90, "bonus": 165}, {"action": "if_has_protect", "requires": "惑星"}]},
+{"name": "アンチを撲滅せよ。", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "description": "アンチ撲滅作戦！相手に70ダメージ＆手札2枚捨てさせる。コメント欄は平和になった。", "effects": [{"action": "damage", "value": 70}, {"action": "discard_opp_random", "value": 2}]},
+{"name": "スティックトリック-SHOWTIME", "type": "magic", "rank": "S", "art": "magic", "cost": 3, "isTag": true, "comboTarget": "前奏曲", "description": "【タッグ】スティック回してSHOWTIME！2枚ドロー＆コスト+2。手札に「前奏曲」があれば完璧な開演で相手に150ダメージ！", "effects": [{"action": "draw", "value": 2}, {"action": "add_cost", "value": 2}, {"action": "if_has_damage", "requires": "前奏曲", "value": 150}]},
+{"name": "猫のにゃーご", "type": "heal", "rank": "B", "art": "heal", "cost": 1, "isTag": true, "comboTarget": "犬のわんごろう", "description": "【タッグ】にゃーごの癒しでHP65回復。手札に「犬のわんごろう」があればワンニャン合唱で155回復＆1枚ドロー！", "effects": [{"action": "combo_heal", "requires": "犬のわんごろう", "base": 65, "bonus": 155}, {"action": "if_has_draw", "requires": "犬のわんごろう", "value": 1}]},
+{"name": "犬のわんごろう", "type": "magic", "rank": "A", "art": "magic", "cost": 2, "isTag": true, "comboTarget": "猫のにゃーご", "description": "【タッグ】わんごろうの元気でHP60回復＆1枚ドロー。手札に「猫のにゃーご」があればワンニャン大騒ぎで相手に135ダメージ！", "effects": [{"action": "heal", "value": 60}, {"action": "draw", "value": 1}, {"action": "if_has_damage", "requires": "猫のにゃーご", "value": 135}]}
+];
+
+const TREASURE_POOL_5 = [
+{name:"最初の切り札！",rank:"SS",art:"treasure",description:"相手の手札からランダムに1枚奪い、自分は1枚引く。",effects:[{action:"steal_random_hand"},{action:"draw",value:1}]},
+{name:"もう一度俺のターン！",rank:"SS",art:"treasure",description:"相手の次のターンをスキップする。",effects:[{action:"skip_turn"}]},
+{name:"ここからは俺の舞台",rank:"S",art:"treasure",description:"自分のコストを2倍にする。",effects:[{action:"double_cost"}]},
+{name:"逆転の宝玉",rank:"SS",art:"treasure",description:"自分のHPが相手より低いとき、HPを入れ替える。",effects:[{action:"swap_hp_if_lower"}]},
+{name:"カードをガード笑笑笑笑",rank:"A",art:"special",description:"HPを140回復し、次のダメージを1回防ぐ。",effects:[{action:"heal",value:140},{action:"protect"}]},
+{name:"錬金釜",rank:"SS",art:"treasure",description:"候補3枚から好きなカードを1枚選んで手札に加える。",effects:[{action:"pick_from_pool",count:3}]},
+{name:"福引の大当たり",rank:"S",art:"treasure",description:"ガラガラポン！カードを3枚引く。",effects:[{action:"draw",value:3}]},
+{name:"黄金の盾",rank:"A",art:"treasure",description:"ガード付与＆HPを80回復。",effects:[{action:"protect"},{action:"heal",value:80}]},
+{name:"禁断の借金",rank:"S",art:"treasure",description:"コスト+6。ただし自分に80ダメージ。",effects:[{action:"add_cost",value:6},{action:"self_damage",value:80}]},
+{name:"倍返しだ！",rank:"SS",art:"treasure",description:"自分のコスト全部をダメージに変換！コスト×25ダメージ（コストは0に）。",effects:[{action:"cost_burst",mult:25}]},
+{name:"時の砂時計",rank:"SS",art:"treasure",description:"相手の次ターンをスキップ＆1枚ドロー。",effects:[{action:"skip_turn"},{action:"draw",value:1}]},
+{name:"手札総ざらい",rank:"S",art:"treasure",description:"相手の手札を2枚捨てさせ、さらに1枚奪う。",effects:[{action:"discard_opp_random",value:2},{action:"steal_random_hand"}]},
+{"name": "時を戻そう、、！", "rank": "SS", "art": "treasure", "description": "【宝物】時間を巻き戻す！HP130回復＆手札を全部捨てて4枚引き直す！", "effects": [{"action": "heal", "value": 130}, {"action": "mulligan_chaos", "pair": "__RESTART4__"}]},
+{"name": "冠", "rank": "SS", "art": "treasure", "description": "【宝物】王者の証！コスト+4＆ガード付与＆2枚ドロー！", "effects": [{"action": "add_cost", "value": 4}, {"action": "protect"}, {"action": "draw", "value": 2}]},
+{"name": "壁紙プレゼント", "rank": "S", "art": "treasure", "description": "【宝物】素敵な壁紙をプレゼント！HP90回復＆2枚ドロー。画面も心もリフレッシュ！", "effects": [{"action": "heal", "value": 90}, {"action": "draw", "value": 2}]},
+{"name": "商業生産の賜物", "rank": "S", "art": "treasure", "description": "【宝物】大量生産の恩恵！コスト+4＆2枚ドロー。工場フル稼働！", "effects": [{"action": "add_cost", "value": 4}, {"action": "draw", "value": 2}]},
+{"name": "プロトタイプ", "rank": "SS", "art": "treasure", "description": "【宝物】試作品は可能性の塊！候補3枚から1枚選んで手札に加え、コスト+2！", "effects": [{"action": "pick_from_pool", "count": 3}, {"action": "add_cost", "value": 2}]}
+];
+const TREASURE_POOL_10 = [
+{name:"神域のオーバークロック",rank:"SS",art:"treasure",description:"【SS宝物】HP150回復＆コスト+5＆2枚ドロー！",effects:[{action:"heal",value:150},{action:"add_cost",value:5},{action:"draw",value:2}]},
+{name:"絶対支配のタイムストップ",rank:"SS",art:"treasure",description:"【SS宝物】相手ターンをスキップ＆貫通140ダメージ！",effects:[{action:"skip_turn"},{action:"pierce_damage",value:140}]},
+{name:"究極カオス・リバース",rank:"SS",art:"treasure",description:"【SS宝物】お互いのHPを平均化＆相手手札1枚強奪！",effects:[{action:"equalize_hp"},{action:"steal_random_hand"}]},
+{name:"世界征服",rank:"SS",art:"treasure",description:"【SS宝物】相手に150ダメージ＆相手ターンをスキップ＆ガード付与！",effects:[{action:"damage",value:150},{action:"skip_turn"},{action:"protect"}]},
+{name:"無限回廊",rank:"SS",art:"treasure",description:"【SS宝物】HPを200回復＆3枚ドロー！",effects:[{action:"heal",value:200},{action:"draw",value:3}]},
+{name:"ブラックホール",rank:"SS",art:"treasure",description:"【SS宝物】お互いの手札を丸ごと入れ替え、相手の次ドローも吸い込む！",effects:[{action:"swap_hands"},{action:"rig_opp_next_draw"}]},
+{name:"創造神の気まぐれ",rank:"SS",art:"treasure",description:"【SS宝物】候補3枚から1枚創造＆2枚ドロー＆コスト+3！",effects:[{action:"pick_from_pool",count:3},{action:"draw",value:2},{action:"add_cost",value:3}]},
+{name:"終末の鐘",rank:"SS",art:"treasure",description:"【SS宝物】ガード貫通200ダメージ！ただし自分も50ダメージ。",effects:[{action:"pierce_damage",value:200},{action:"self_damage",value:50}]},
+{"name": "The end", "rank": "SS", "art": "treasure", "description": "【SS宝物】終焉の幕引き！ガード貫通210ダメージ＆相手の次ターンをスキップ！", "effects": [{"action": "pierce_damage", "value": 210}, {"action": "skip_turn"}]},
+{"name": "フィールド展開！", "rank": "SS", "art": "treasure", "description": "【SS宝物】フィールド展開！3ターンの間、毎ターンHP45回復する結界を張り、ガード付与＆1枚ドロー！", "effects": [{"action": "add_continuous_effect", "targetEnemy": false, "duration": 3, "effect": {"action": "continuous_heal", "value": 45}}, {"action": "protect"}, {"action": "draw", "value": 1}]}
+];
+
+function generateRandomCard(treasureTier = null) {
+  const id = `c_${uid().slice(0, 8)}`;
+  if (treasureTier === 10 || treasureTier === 5) {
+    const pool = treasureTier === 10 ? TREASURE_POOL_10 : TREASURE_POOL_5;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    return { id, name: pick.name, type: "special", rank: pick.rank, art: pick.art, cost: 0, description: pick.description, effects: clone(pick.effects), treasure: true };
+  }
+  const tpl = CHAOS_CARDS[Math.floor(Math.random() * CHAOS_CARDS.length)];
+  return { id, name: tpl.name, type: tpl.type, rank: tpl.rank, art: tpl.art, cost: tpl.cost, isTag: Boolean(tpl.isTag), comboTarget: tpl.comboTarget || null, description: tpl.description, effects: clone(tpl.effects), treasure: false };
+}
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function createPlayer(name, isBot = false) {
+  return { name, isBot, hp: CONFIG.startingHP, cost: CONFIG.startingCost, hand: [], effects: [], protected: false, skipNextTurn: false, skipNextDraw: false };
+}
+
+let state = { status: "waiting", turn: "P1", round: 1, winner: null, lastPlayed: null, pending: null, players: { P1: createPlayer("Player 1"), P2: createPlayer("Player 2") }, logs: [] };
+const net = { mode: "offline", role: "none", roomId: "", peer: null, conn: null, connected: false, mySlot: "P1", connectTimer: null, pendingGuestChoice: null };
+let choiceLock = false; // 選択モーダル表示中はBOTを止める
+let actionLock = false; // 送信連打防止ロック
+let guestChoiceSeq = 0;
+
+function getMyName() {
+  const val = document.getElementById("playerNameInput").value.trim();
+  return val || (net.role === "guest" ? "Player 2" : "Player 1");
+}
+function setLobbyStatus(text) { document.getElementById("lobbyStatus").textContent = text; }
+
+/* ============ NETWORK (PeerJS: ルームIDで別端末とも繋がる) ============ */
+// 公開のPeerJSシグナリングサーバー経由で接続し、以降はWebRTCで直接通信する。
+// ルームID = ホストのPeer ID。サーバーを自前で用意する必要はない。
+function rawSend(msg) {
+  if (net.conn && net.conn.open) net.conn.send(JSON.parse(JSON.stringify(msg)));
+}
+function sendSignal(payload) { rawSend({ _room: net.roomId, from: net.role, ...payload }); }
+function syncState() {
+  if (net.role !== "host") return;
+  rawSend({ _room: net.roomId, from: "host", kind: "state", state });
+}
+function leaveRoom() {
+  try { if (net.conn) net.conn.close(); } catch {}
+  try { if (net.peer) net.peer.destroy(); } catch {}
+  net.conn = null; net.peer = null; net.connected = false;
+}
+function clearConnectTimer() {
+  if (net.connectTimer) { clearTimeout(net.connectTimer); net.connectTimer = null; }
+}
+/* PeerJSはオンライン対戦を使う時だけ遅延読み込みする。
+   起動時の読み込みに混ぜると、CDN応答が詰まった時に画面全体が止まってしまうため。 */
+let peerJsPromise = null;
+function loadPeerJs(onOk, onNg) {
+  if (typeof Peer !== "undefined") { onOk(); return; }
+  if (!peerJsPromise) {
+    peerJsPromise = new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js";
+      s.onload = () => resolve();
+      s.onerror = () => { peerJsPromise = null; reject(new Error("peerjs load failed")); };
+      document.head.appendChild(s);
+    });
+  }
+  peerJsPromise.then(onOk, onNg);
+}
+let peerLibLoading = false;
+function initRoom(roomCode, role) {
+  clearConnectTimer();
+  leaveRoom();
+  net.mode = "online"; net.role = role; net.roomId = roomCode;
+  net.mySlot = role === "guest" ? "P2" : "P1";
+  actionLock = false;
+  document.getElementById("onlineStartBtn").style.display = "none";
+  if (typeof Peer === "undefined") {
+    if (peerLibLoading) { setLobbyStatus("通信ライブラリ(PeerJS)を読み込み中...そのまま待ってね。"); return; }
+    peerLibLoading = true;
+    setLobbyStatus("通信ライブラリ(PeerJS)を読み込み中...");
+    loadPeerJs(
+      () => { peerLibLoading = false; initRoom(roomCode, role); },
+      () => { peerLibLoading = false; setLobbyStatus("通信ライブラリ(PeerJS)を読み込めませんでした。ネット接続を確認して、もう一度ボタンを押してね。"); }
+    );
+    return;
+  }
+  const hostId = `myfield-${roomCode}`;
+  // STUNだけだと同じWiFi同士は繋がりやすいが、違う回線（家のWiFi × スマホ回線、
+  // キャリアNAT同士など）では直接接続できずにタイムアウトする。
+  // そのため無料の公開TURN（中継）サーバーを併用する：直接繋がれない場合は
+  // TURN経由で中継されるので、違うWiFi・違う回線同士でも対戦できる。
+  const peerConfig = {
+    config: {
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun1.l.google.com:19302" },
+        { urls: "stun:stun2.l.google.com:19302" },
+        { urls: "stun:stun.cloudflare.com:3478" },
+        {
+          urls: "turn:openrelay.metered.ca:80",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        },
+        {
+          urls: "turn:openrelay.metered.ca:443",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        },
+        {
+          urls: "turn:openrelay.metered.ca:443?transport=tcp",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        },
+        {
+          urls: "turn:a.relay.metered.ca:80",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        },
+        {
+          urls: "turn:a.relay.metered.ca:443",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        },
+        {
+          urls: "turn:a.relay.metered.ca:443?transport=tcp",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        }
+      ],
+      iceCandidatePoolSize: 10
+    }
+  };
+  if (role === "host") {
+    const peer = new Peer(hostId, peerConfig);
+    net.peer = peer;
+    setLobbyStatus(`ルームID「${roomCode}」を準備中...`);
+    peer.on("open", () => setLobbyStatus(`ルームID「${roomCode}」を作成したよ！相手の入室待ち...`));
+    peer.on("connection", (conn) => {
+      if (net.conn && net.conn.open) { conn.on("open", () => conn.close()); return; } // 満員
+      setupConn(conn);
+    });
+    peer.on("disconnected", () => {
+      setLobbyStatus(`ルーム「${roomCode}」の通信が一度切断されたよ。再接続を試行中...`);
+      try { if (!peer.destroyed) peer.reconnect(); } catch {}
+    });
+    peer.on("error", (err) => {
+      if (err.type === "unavailable-id") setLobbyStatus("そのルームIDは使用中です。もう一度「ルームを作成」してね。");
+      else setLobbyStatus(`通信エラー(${err.type})：回線やブラウザ設定を確認してね。`);
+    });
+  } else {
+    setLobbyStatus(`ルームID「${roomCode}」に接続中...`);
+    const peer = new Peer(peerConfig);
+    net.peer = peer;
+    net.connectTimer = setTimeout(() => {
+      if (!net.connected) {
+        setLobbyStatus(`ルーム「${roomCode}」への接続に時間がかかってるよ。中継サーバー経由で接続を試みているので、もう少し待つか、IDを確認して再試行してね！（同じWiFiじゃなくても大丈夫だよ）`);
+      }
+    }, 20000);
+    peer.on("open", () => {
+      if (!peer.destroyed) setupConn(peer.connect(hostId, { reliable: true }));
+    });
+    peer.on("disconnected", () => {
+      try { if (!peer.destroyed) peer.reconnect(); } catch {}
+    });
+    peer.on("error", (err) => {
+      clearConnectTimer();
+      if (err.type === "peer-unavailable") setLobbyStatus("そのルームは見つかりませんでした。IDを確認してね。");
+      else setLobbyStatus(`通信エラー(${err.type})：回線やブラウザ設定を確認してね。`);
+    });
+  }
+}
+function setupConn(conn) {
+  net.conn = conn;
+  // ICE（直接接続／TURN中継）の状態をロビーに表示して、違う回線同士でも
+  // 「中継で繋がったのか」が分かるようにする。disconnected は一時的な
+  // ことがあるので即座に切断扱いにせず、failed の時だけ案内を出す。
+  try {
+    conn.on("iceStateChanged", (iceState) => {
+      if (iceState === "disconnected") {
+        setLobbyStatus("接続が一時的に不安定だよ…自動で再接続を試みているので少し待ってね。");
+      } else if (iceState === "failed") {
+        setLobbyStatus("接続に失敗しました。お互いのネット接続を確認して、ルームを作り直すか再入室してね。（違うWiFi・スマホ回線同士でも中継で繋がる設定になっています）");
+      }
+    });
+  } catch {}
+  conn.on("open", () => {
+    clearConnectTimer();
+    net.connected = true;
+    actionLock = false;
+    if (net.role === "guest") {
+      sendSignal({ kind: "hello", guestName: getMyName() });
+      setLobbyStatus(`ルーム「${net.roomId}」に入室完了！ホストの開始を待ってね。`);
+    } else if (net.role === "host" && state.status === "playing") {
+      syncState();
+    }
+  });
+  conn.on("data", (data) => onNetMsg(data));
+  conn.on("close", () => {
+    clearConnectTimer();
+    net.connected = false;
+    actionLock = false;
+    setLobbyStatus("相手との接続が切れました。ルームを作り直すか再入室してね。");
+    if (state.status === "playing") {
+      showChaosModal("⚠️ 通信が切断されました", "相手との接続が切れたため、メニューに戻ります。", [{ label: "メニューへ戻る", sub: "ロビーに戻ります", value: "back" }], () => {
+        showScreen("menuScreen");
+      });
+    }
+  });
+  conn.on("error", () => {
+    actionLock = false;
+    setLobbyStatus("通信エラーが発生しました。");
+  });
+}
+function onNetMsg(msg) {
+  if (!msg || msg._room !== net.roomId || msg.from === net.role) return;
+  try {
+    if (msg.kind === "hello" && net.role === "host") {
+      state.players.P2.name = (msg.guestName || "Player 2").slice(0, 16);
+      setLobbyStatus(`${state.players.P2.name} が入室！バトルスタートできるよ！`);
+      document.getElementById("onlineStartBtn").style.display = "block";
+      syncState();
+    } else if (msg.kind === "state" && net.role === "guest") {
+      actionLock = false;
+      state = msg.state;
+      if (state.status === "playing") showScreen("battleScreen");
+      renderBattle();
+    } else if (msg.kind === "info" && net.role === "guest") {
+      showChaosModal(msg.title, msg.desc, msg.items || []);
+    } else if (msg.kind === "guest_choice_req" && net.role === "guest") {
+      showChaosModal(msg.title, msg.desc, msg.items || [], (picked) => {
+        sendSignal({ kind: "guest_choice_res", seq: msg.seq, value: picked });
+      });
+    } else if (msg.kind === "guest_choice_res" && net.role === "host") {
+      if (net.pendingGuestChoice && net.pendingGuestChoice.seq === msg.seq) {
+        const resolver = net.pendingGuestChoice.resolve;
+        net.pendingGuestChoice = null;
+        resolver(msg.value);
+      }
+    } else if (msg.kind === "action" && net.role === "host") {
+      processAction("P2", msg.action);
+    } else if (msg.kind === "rematch" && net.role === "host") {
+      startBattle(false);
+    }
+  } catch (err) { console.error(err); actionLock = false; }
+}
+
+/* ============ UI helpers ============ */
+function showChaosModal(title, desc, items, onPick) {
+  const modal = document.getElementById("chaosModal");
+  document.getElementById("chaosTitle").textContent = title;
+  document.getElementById("chaosDesc").textContent = desc;
+  const box = document.getElementById("chaosChoices");
+  box.innerHTML = "";
+  // 修正: 選択式モーダルは閉じて逃げられないようにする（閉じるとカードが消える/交換が不発になるため）
+  document.getElementById("chaosCloseBtn").style.display = onPick ? "none" : "";
+  choiceLock = Boolean(onPick);
+  for (const item of items) {
+    const btn = document.createElement("button");
+    btn.className = "choice-chip";
+    btn.innerHTML = `<div style="font-weight:900;">${esc(item.label)}</div><div style="font-size:0.58rem;color:#7c6a92;margin-top:2px;">${esc(item.sub || "")}</div>`;
+    btn.addEventListener("click", () => {
+      modal.classList.remove("open");
+      if (onPick) {
+        choiceLock = false;
+        onPick(item.value);
+        scheduleBotTurn();
+      }
+    });
+    box.appendChild(btn);
+  }
+  modal.classList.add("open");
+}
+document.getElementById("chaosCloseBtn").addEventListener("click", () => {
+  document.getElementById("chaosModal").classList.remove("open");
+});
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach((el) => el.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+function addLog(text) {
+  state.logs.unshift({ id: uid(), text });
+  if (state.logs.length > 70) state.logs.pop();
+}
+// 手札の公開情報を「そのカードの持ち主本人」に見せる（ゲスト側にも届ける）
+function showInfoTo(ownerSlot, title, desc, items) {
+  const owner = state.players[ownerSlot];
+  if (owner.isBot) return;
+  if (ownerSlot === net.mySlot) showChaosModal(title, desc, items);
+  else if (net.mode === "online" && net.role === "host") sendSignal({ kind: "info", title, desc, items });
+}
+
+/* ============ GAME ============ */
+function startBattle(isBotMode) {
+  const myName = getMyName();
+  state.status = "playing"; state.turn = "P1"; state.round = 1; state.winner = null; state.lastPlayed = null; state.pending = null; state.logs = [];
+  choiceLock = false;
+  if (isBotMode) {
+    net.mode = "offline"; net.role = "none"; net.mySlot = "P1";
+    state.players.P1 = createPlayer(myName, false);
+    state.players.P2 = createPlayer("CPU BOT", true);
+  } else {
+    const p2name = state.players.P2.name || "Player 2";
+    state.players.P1 = createPlayer(myName, false);
+    state.players.P2 = createPlayer(p2name, false);
+  }
+  for (let i = 0; i < CONFIG.startingHand; i++) {
+    addCardToHand(state.players.P1, generateRandomCard(null), false);
+    addCardToHand(state.players.P2, generateRandomCard(null), false);
+  }
+  addLog(`カオスバトル開始！${state.players.P1.name} vs ${state.players.P2.name}`);
+  showScreen("battleScreen");
+  afterMutation();
+}
+function dealDamage(target, amount, pierce = false) {
+  if (!pierce && target.protected) { target.protected = false; addLog(`${target.name} のガードがダメージを防いだ！`); return 0; }
+  const dmg = Math.max(0, Math.floor(amount));
+  target.hp = Math.max(0, target.hp - dmg);
+  return dmg;
+}
+function healPlayer(player, amount) {
+  const before = player.hp;
+  player.hp = Math.min(CONFIG.maxHP, player.hp + Math.max(0, Math.floor(amount)));
+  return player.hp - before;
+}
+function hasCardName(player, name) { return player.hand.some((c) => c.name === name); }
+
+function addCardToHand(player, card, logOverflow = true) {
+  if (!player || !card) return false;
+  const cap = CONFIG.maxHand || 10;
+  if (player.hand.length >= cap) {
+    if (logOverflow) addLog(`🖐️ ${player.name} の手札は上限（${cap}枚）のため「${card.name}」は溢れた！`);
+    return false;
+  }
+  player.hand.push(card);
+  return true;
+}
+
+function drawCards(p, n) {
+  const cap = CONFIG.maxHand || 10;
+  let added = 0;
+  for (let i = 0; i < n; i++) {
+    if (p.hand.length >= cap) {
+      addLog(`🖐️ ${p.name} の手札は上限（${cap}枚）のため、残り${n - i}枚は溢れた！`);
+      break;
+    }
+    p.hand.push(generateRandomCard(null));
+    added++;
+  }
+  return added;
+}
+
+function executeCard(card, ownerSlot) {
+  const owner = state.players[ownerSlot];
+  const target = state.players[ownerSlot === "P1" ? "P2" : "P1"];
+  state.lastPlayed = { card, ownerName: owner.name };
+  for (const eff of card.effects || []) {
+    if (state.status === "finished") break;
+    switch (eff.action) {
+      case "damage": { const d = dealDamage(target, eff.value); addLog(`${owner.name} の「${card.name}」→ ${target.name} に ${d} ダメージ！`); break; }
+      case "pierce_damage": { const d = dealDamage(target, eff.value, true); addLog(`貫通！「${card.name}」→ ${target.name} に ${d} ダメージ！`); break; }
+      case "self_damage": { owner.hp = Math.max(0, owner.hp - eff.value); addLog(`${owner.name} も勢いで ${eff.value} ダメージ！`); break; }
+      case "heal": { const h = healPlayer(owner, eff.value); addLog(`${owner.name} の「${card.name}」→ HP ${h} 回復！`); break; }
+      case "add_cost": { owner.cost += eff.value; addLog(`${owner.name} のコスト +${eff.value}！`); break; }
+      case "random_damage": { const roll = randInt(eff.min, eff.max); const d = dealDamage(target, roll); addLog(`${owner.name} の「${card.name}」→ 運ゲー ${d} ダメージ！`); break; }
+      case "combo_damage": {
+        const matched = hasCardName(owner, eff.requires);
+        const d = dealDamage(target, matched ? eff.bonus : eff.base);
+        addLog(matched ? `🔥セット成立（${eff.requires}所持）！「${card.name}」が暴走して ${d} ダメージ！` : `${owner.name} の「${card.name}」→ ${d} ダメージ！`);
+        break;
+      }
+      case "combo_heal": {
+        const matched = hasCardName(owner, eff.requires);
+        const h = healPlayer(owner, matched ? eff.bonus : eff.base);
+        addLog(matched ? `🍙セット成立（${eff.requires}所持）！パワーアップしてHP ${h} 回復！` : `${owner.name} の「${card.name}」→ HP ${h} 回復！`);
+        break;
+      }
+      case "if_has_damage": { if (hasCardName(owner, eff.requires)) { const d = dealDamage(target, eff.value); addLog(`🔥セット効果（${eff.requires}所持）→ 追加で ${d} ダメージ！`); } break; }
+      case "combo_cost_draw": {
+        if (hasCardName(owner, eff.requires)) {
+          owner.cost += eff.bonusCost; drawCards(owner, eff.bonusDraw);
+          addLog(`🕺セット成立（${eff.requires}所持）！コスト+${eff.bonusCost}＆${eff.bonusDraw}枚ドロー！`);
+        } else { owner.cost += eff.baseCost; addLog(`${owner.name} のコスト +${eff.baseCost}！`); }
+        break;
+      }
+      case "if_has_protect": { if (hasCardName(owner, eff.requires)) { owner.protected = true; addLog(`🔥セット効果（${eff.requires}所持）→ ガード付与！`); } break; }
+      case "rakko_todo": {
+        if (hasCardName(owner, eff.pair)) { const d = dealDamage(target, 70); const h = healPlayer(owner, 70); addLog(`🦦セット成立！ラッコもトドも大暴れで ${d} ダメージ＆HP ${h} 回復！`); }
+        else if (Math.random() < 0.5) { const d = dealDamage(target, 70); addLog(`ラッコだった！${target.name} に ${d} ダメージ！`); }
+        else { const h = healPlayer(owner, 70); addLog(`トドだった！自分のHP ${h} 回復！`); }
+        break;
+      }
+      case "unless_has_self_dmg": {
+        if (!hasCardName(owner, eff.requires)) { owner.hp = Math.max(0, owner.hp - eff.value); addLog(`「${eff.requires}」を持ってなかったので恥ずかしくて自分に ${eff.value} ダメージ！`); }
+        else addLog(`「${eff.requires}」を持っていたので自爆回避！`);
+        break;
+      }
+      case "mulligan_chaos": {
+        const matched = hasCardName(owner, eff.pair);
+        const drawCnt = eff.pair === "__RESTART4__" ? 4 : (matched ? 5 : 3);
+        owner.hand = []; drawCards(owner, drawCnt);
+        addLog(`🗺️「${card.name}」で手札を全部捨てて ${drawCnt} 枚引き直した！`);
+        break;
+      }
+      case "swap_all_hands_if": {
+        if (hasCardName(owner, eff.requires)) { const tmp = owner.hand; owner.hand = target.hand; target.hand = tmp; addLog(`💥セット成立（${eff.requires}所持）！お互いの手札を丸ごと入れ替えた！！`); }
+        else addLog(`「${eff.requires}」を持っていなかったので不発！（まぁいっか）`);
+        break;
+      }
+      case "tadashi_attack": {
+        if (target.hand.some((c) => c.name.includes("盾"))) addLog(`⚠️「ただし」発動！しかし相手が手札に「盾」系カードを持っていたため無効化された！`);
+        else { const d = dealDamage(target, 130); addLog(`「ただし」→ 盾を持ってなかったので ${target.name} に ${d} ダメージ！`); }
+        break;
+      }
+      case "expose_all_hand": {
+        addLog(`📢「${card.name}」発動！${target.name} の手札全${target.hand.length}枚が晒された！`);
+        showInfoTo(ownerSlot, `📢 ${card.name}（相手の手札全部晒し！）`, `${target.name} の手札 ${target.hand.length} 枚を丸裸にしたぞ！`,
+          target.hand.length > 0 ? target.hand.map((c) => ({ label: `[${c.rank} / ⭐${c.cost}] ${c.name}`, sub: c.description, value: c.id })) : [{ label: "手札ゼロだった！", sub: "何も持ってない！", value: null }]);
+        break;
+      }
+      case "angry_hand_damage": { const d = dealDamage(target, target.hand.length * eff.mult); addLog(`💢お局がキレた！相手の手札${target.hand.length}枚×${eff.mult}＝ ${d} ダメージ！`); break; }
+      case "steal_and_give_trash": {
+        if (target.hand.length > 0) {
+          const [stolen] = target.hand.splice(Math.floor(Math.random() * target.hand.length), 1);
+          const got1 = addCardToHand(owner, stolen);
+          if (!got1) addLog(`${owner.name} は手札上限のため「${stolen.name}」を保持できなかった！`);
+          addCardToHand(target, { id: `c_${uid().slice(0, 8)}`, name: "使いかけのリップ(カス)", type: "special", rank: "D", art: "special", cost: 1, description: "何も起きない。ただ手札を圧迫するだけ。", effects: [], treasure: false });
+          addLog(`💄「${stolen.name}」を奪い、代わりに「使いかけのリップ(カス)」を押し付けた！`);
+        } else addLog("相手の手札が空で奪えなかった！");
+        break;
+      }
+      case "dpad_roulette": {
+        const dirs = [
+          () => { const d = dealDamage(target, 120); addLog(`⬆️十字キー【上】！相手に ${d} ダメージ！`); },
+          () => { const h = healPlayer(owner, 120); addLog(`⬇️十字キー【下】！自分のHP ${h} 回復！`); },
+          () => {
+            if (target.hand.length > 0) { const [st] = target.hand.splice(Math.floor(Math.random() * target.hand.length), 1); if (addCardToHand(owner, st)) addLog(`➡️十字キー【右】！相手の「${st.name}」を強奪！`); }
+            else addLog("➡️十字キー【右】！奪う手札がなかった！");
+          },
+          () => { owner.hp = Math.max(0, owner.hp - 60); addLog(`⬅️十字キー【左】！コマンドミスで自分に 60 ダメージ！`); }
+        ];
+        dirs[Math.floor(Math.random() * dirs.length)]();
+        break;
+      }
+      case "hack_hand_cost_1": { for (const c of owner.hand) { if (!c.treasure && c.cost > 1) c.cost = 1; } addLog(`💻プログラマーがコードを書き換え！手札のコストが全部 1 になった！`); break; }
+      case "enter_slam": { const bonus = target.cost >= 5 ? 60 : 0; const d = dealDamage(target, 85 + bonus); addLog(`⌨️ッターン！！${target.name} に ${d} ダメージ！${bonus ? "（高コスト狩りボーナス！）" : ""}`); break; }
+      case "equalize_hp": { const avg = Math.floor((owner.hp + target.hp) / 2); owner.hp = avg; target.hp = avg; addLog(`🤷お互いのHPが ${avg} になった！`); break; }
+      case "reset_all_cost": { owner.cost = 0; target.cost = 0; addLog(`🏠「おうちに帰ろうよ。」お互いのコストが 0 になった！`); break; }
+      case "kasu_shield": {
+        if (Math.random() < 0.5) { owner.protected = true; addLog(`🛡盾(カス)が奇跡的に耐えた！ガード付与！`); }
+        else addLog(`💥盾(カス)は出した瞬間に粉々に砕け散った！`);
+        break;
+      }
+      case "opp_heal_tiny": { healPlayer(target, 20); addLog(`中古のせいで相手もちょっと嬉しくてHP20回復！`); break; }
+      case "plant_bomb": {
+        addCardToHand(target, { id: `c_${uid().slice(0, 8)}`, name: "木馬の中の爆弾", type: "attack", rank: "D", art: "attack", cost: 1, description: "使うと自分に80ダメージ！捨てられない邪魔カード！", effects: [{ action: "self_damage", value: 80 }], treasure: false });
+        addLog(`🐴トロイの木馬で相手の手札に「木馬の中の爆弾」を仕込んだ！`);
+        break;
+      }
+      case "keiba_gamble": {
+        if (Math.random() < 0.3) { const d = dealDamage(target, 190); addLog(`🏇大穴的中！！競馬のおっさん達が大歓喜して ${d} ダメージ！`); }
+        else { owner.hp = Math.max(0, owner.hp - 25); addLog(`🏇ハズレ馬券…おっさん達が肩を落として自分に 25 ダメージ！`); }
+        break;
+      }
+      case "if_has_donguri": { if (hasCardName(owner, eff.requires)) { const low = Math.min(owner.hp, target.hp); owner.hp = low; target.hp = low; addLog(`🌰タッグ効果（${eff.requires}所持）→ どんぐりの背比べ！お互いのHPが ${low} になった！`); } break; }
+      case "if_has_equal_cost": { if (hasCardName(owner, eff.requires)) { const a = Math.floor((owner.cost + target.cost) / 2); owner.cost = a; target.cost = a; addLog(`📏タッグ効果（${eff.requires}所持）→ お互いのコストが ${a} に揃った！`); } break; }
+      case "if_has_skip": { if (hasCardName(owner, eff.requires)) { target.skipNextTurn = true; addLog(`⏭タッグ効果（${eff.requires}所持）→ ${target.name} の次ターンをスキップ！`); } break; }
+      case "if_has_pierce": { if (hasCardName(owner, eff.requires)) { const d = dealDamage(target, eff.value, true); addLog(`💥タッグ貫通（${eff.requires}所持）→ ガード無視の ${d} ダメージ！`); } break; }
+      case "if_has_cost_protect": { if (hasCardName(owner, eff.requires)) { owner.cost += eff.cost; owner.protected = true; addLog(`🏎タッグ効果（${eff.requires}所持）→ コスト+${eff.cost}＆ガード付与！`); } break; }
+      case "nosferatu_drain": {
+        const matched = hasCardName(owner, eff.requires);
+        const d = dealDamage(target, matched ? 220 : 110);
+        const h = healPlayer(owner, matched ? 110 : 55);
+        addLog(matched ? `🧛タッグ共鳴（${eff.requires}所持）！闇の吸血で ${d} ダメージ＆HP ${h} 回復！` : `🧛「Nosferatu」→ ${d} ダメージ＆HP ${h} 回復！`);
+        break;
+      }
+      case "if_has_cost": { if (hasCardName(owner, eff.requires)) { owner.cost += eff.value; addLog(`⚡タッグ効果（${eff.requires}所持）→ コスト+${eff.value}！`); } break; }
+      case "if_has_heal_protect": { if (hasCardName(owner, eff.requires)) { const h = healPlayer(owner, eff.value); owner.protected = true; addLog(`🥋タッグ効果（${eff.requires}所持）→ 黒帯昇格！HP ${h} 回復＆ガード付与！`); } break; }
+      case "if_has_swap_hp": { if (hasCardName(owner, eff.requires)) { const tmp = owner.hp; owner.hp = target.hp; target.hp = tmp; addLog(`🌏タッグ効果（${eff.requires}所持）→ 地球の裏側ワープでHP入れ替え！`); } break; }
+      case "if_has_cost_draw": { if (hasCardName(owner, eff.requires)) { owner.cost += eff.cost; drawCards(owner, eff.draw); addLog(`🚗タッグ効果（${eff.requires}所持）→ コスト+${eff.cost}＆${eff.draw}枚ドロー！`); } break; }
+      case "if_has_draw": { if (hasCardName(owner, eff.requires)) { const n = eff.value || 1; drawCards(owner, n); addLog(`🔥タッグ効果（${eff.requires}所持）→ 追加で ${n} 枚ドロー！`); } break; }
+      case "combo_pierce": {
+        const matched = hasCardName(owner, eff.requires);
+        const d = dealDamage(target, matched ? eff.bonus : eff.base, matched);
+        addLog(matched ? `🥊タッグ貫通（${eff.requires}所持）！ガードをぶち抜いて ${d} ダメージ！` : `${owner.name} の「${card.name}」→ ${d} ダメージ！`);
+        break;
+      }
+      case "if_has_rig_draw": { if (hasCardName(owner, eff.requires)) { target.skipNextDraw = true; addLog(`🎭タッグ効果（${eff.requires}所持）→ ${target.name} の次のドローも消滅！`); } break; }
+      case "opp_draw": { const cnt = eff.value || 2; drawCards(target, cnt); addLog(`${owner.name} の「${card.name}」→ ${target.name} にカードを ${cnt} 枚引かせた！`); break; }
+      case "steal_random_hand": {
+        if (target.hand.length > 0) { const [stolen] = target.hand.splice(Math.floor(Math.random() * target.hand.length), 1); if (addCardToHand(owner, stolen)) addLog(`${owner.name} が ${target.name} の手札から「${stolen.name}」を奪った！`); }
+        else addLog(`${target.name} の手札が空で奪えなかった！`);
+        break;
+      }
+      case "peek_opp_hand": {
+        const peekCount = Math.min(eff.count || 3, target.hand.length);
+        const indices = [...Array(target.hand.length).keys()];
+        for (let i = indices.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [indices[i], indices[j]] = [indices[j], indices[i]]; }
+        const sampled = indices.slice(0, peekCount).map((idx) => target.hand[idx]);
+        addLog(`${owner.name} が ${target.name} の手札を ${peekCount} 枚覗いた！`);
+        showInfoTo(ownerSlot, `👀 ${card.name}（相手の手札を${peekCount}枚覗き見！）`, `${target.name} の手札からランダムに ${peekCount} 枚を表示中！`,
+          sampled.map((c) => ({ label: `[${c.rank} / ⭐${c.treasure ? "★" : c.cost}] ${c.name}`, sub: c.description, value: c.id })));
+        break;
+      }
+      case "pick_from_pool": {
+        const candidates = Array.from({ length: eff.count || 3 }, () => generateRandomCard(null));
+        const applyPicked = (picked) => {
+          if (picked) { if (addCardToHand(owner, picked)) addLog(`${owner.name} が「${picked.name}」を選んで手札に加えた！`); }
+          checkWinner();
+          afterMutation();
+        };
+        const items = candidates.map((c) => ({ label: `[${c.rank} / ⭐${c.treasure ? "★" : c.cost}] ${c.name}`, sub: c.description, value: c }));
+        if (!owner.isBot && ownerSlot === net.mySlot) {
+          showChaosModal(`✨ ${card.name}（1枚選んで手札へ！）`, "好きなカードを1枚選んでね！", items, applyPicked);
+        } else if (!owner.isBot && net.mode === "online" && net.role === "host" && ownerSlot === "P2") {
+          const seq = ++guestChoiceSeq;
+          net.pendingGuestChoice = { seq, resolve: applyPicked };
+          sendSignal({ kind: "guest_choice_req", seq, title: `✨ ${card.name}（1枚選んで手札へ！）`, desc: "好きなカードを1枚選んでね！", items });
+        } else {
+          const auto = candidates[0];
+          addCardToHand(owner, auto);
+          addLog(`${owner.name} が「${auto.name}」を選んで手札に加えた！`);
+        }
+        break;
+      }
+      case "swap_card_with_opp": {
+        if (owner.hand.length === 0 || target.hand.length === 0) { addLog("手札が足りなくてカード交換できなかった！"); break; }
+        const doSwap = (myIdx) => {
+          if (!owner.hand[myIdx] || target.hand.length === 0) { addLog("手札が変わっていたので交換できなかった！"); }
+          else {
+            const oppIdx = Math.floor(Math.random() * target.hand.length);
+            const myCard = owner.hand[myIdx], oppCard = target.hand[oppIdx];
+            owner.hand[myIdx] = oppCard; target.hand[oppIdx] = myCard;
+            addLog(`${owner.name} が「${myCard.name}」と ${target.name} の「${oppCard.name}」を交換！`);
+          }
+          checkWinner();
+          afterMutation();
+        };
+        const handItems = owner.hand.map((c, idx) => ({ label: `[${c.rank} / ⭐${c.treasure ? "★" : c.cost}] ${c.name}`, sub: c.description, value: idx }));
+        if (!owner.isBot && ownerSlot === net.mySlot) {
+          showChaosModal(`🔄 ${card.name}（交換する自分のカードを選択！）`, `${target.name} の手札1枚（ランダム）と交換する自分のカードを選んでね！`, handItems, (myIdx) => doSwap(typeof myIdx === "number" ? myIdx : 0));
+        } else if (!owner.isBot && net.mode === "online" && net.role === "host" && ownerSlot === "P2") {
+          const seq = ++guestChoiceSeq;
+          net.pendingGuestChoice = { seq, resolve: (myIdx) => doSwap(typeof myIdx === "number" ? myIdx : 0) };
+          sendSignal({ kind: "guest_choice_req", seq, title: `🔄 ${card.name}（交換する自分のカードを選択！）`, desc: `${target.name} の手札1枚（ランダム）と交換する自分のカードを選んでね！`, items: handItems });
+        } else doSwap(0);
+        break;
+      }
+      case "discard_opp_random": {
+        let n = 0;
+        for (let i = 0; i < (eff.value || 1) && target.hand.length > 0; i++) { target.hand.splice(Math.floor(Math.random() * target.hand.length), 1); n++; }
+        addLog(`🗑「${card.name}」→ ${target.name} の手札を ${n} 枚捨てさせた！`);
+        break;
+      }
+      case "cost_burst": { const dmg = owner.cost * eff.mult; owner.cost = 0; const d = dealDamage(target, dmg); addLog(`💸「${card.name}」→ 全コストを爆発させて ${d} ダメージ！`); break; }
+      case "hand_heal": { const h = healPlayer(owner, owner.hand.length * eff.mult); addLog(`🍽「${card.name}」→ 手札${owner.hand.length}枚ぶん食べてHP ${h} 回復！`); break; }
+      case "revenge": { const lost = CONFIG.maxHP - owner.hp; const d = dealDamage(target, Math.floor(lost * eff.mult)); addLog(`😡「${card.name}」→ 失ったHP ${lost} の怒りで ${d} ダメージ！`); break; }
+      case "chohan": {
+        if (Math.random() < 0.5) { const d = dealDamage(target, 150); addLog(`🎲丁！大当たりで ${d} ダメージ！`); }
+        else { owner.hp = Math.max(0, owner.hp - 50); addLog(`🎲半…外れて自分に 50 ダメージ！`); }
+        break;
+      }
+      case "lottery": {
+        if (Math.random() < 0.1) { const d = dealDamage(target, 250); addLog(`🎫1等当選！！！！ ${d} ダメージ！！`); }
+        else { const h = healPlayer(owner, 20); addLog(`🎫ハズレ…残念賞でHP ${h} 回復。`); }
+        break;
+      }
+      case "give_trash": {
+        const n = eff.value || 1;
+        for (let i = 0; i < n; i++) addCardToHand(target, { id: `c_${uid().slice(0, 8)}`, name: "謎のゴミ(カス)", type: "special", rank: "D", art: "special", cost: 1, description: "何も起きない。ただ手札を圧迫するだけ。", effects: [], treasure: false });
+        addLog(`🗑${target.name} の手札にゴミを ${n} 枚押し付けた！`);
+        break;
+      }
+      case "swap_hands": { const tmp = owner.hand; owner.hand = target.hand; target.hand = tmp; addLog(`🕳お互いの手札がブラックホールに吸い込まれて入れ替わった！`); break; }
+      case "rig_opp_next_draw": { target.skipNextDraw = true; addLog(`${owner.name} が ${target.name} の次のドローを消した！`); break; }
+      case "add_continuous_effect": {
+        const recipient = eff.targetEnemy ? target : owner;
+        recipient.effects.push({ ...eff.effect, source: card.name, remaining: eff.duration });
+        addLog(`${recipient.name} に「${card.name}」効果（${eff.duration}T）を付与！`);
+        break;
+      }
+      case "draw": { const n = eff.value || 1; drawCards(owner, n); addLog(`${owner.name} がカードを ${n} 枚引いた！`); break; }
+      case "protect": { owner.protected = true; addLog(`${owner.name} にガード付与！`); break; }
+      case "swap_hp": { const tmp = owner.hp; owner.hp = target.hp; target.hp = tmp; addLog("HP入れ替え発動！"); break; }
+      case "swap_hp_if_lower": {
+        if (owner.hp < target.hp) { const tmp = owner.hp; owner.hp = target.hp; target.hp = tmp; addLog("逆転発動！HPを入れ替えた！"); }
+        else addLog("HP入れ替えは不発（HPが相手以上）");
+        break;
+      }
+      case "double_cost": { owner.cost *= 2; addLog(`${owner.name} のコストが2倍（${owner.cost}）になった！`); break; }
+      case "skip_turn": { target.skipNextTurn = true; addLog(`${target.name} の次ターンをスキップ！`); break; }
+    }
+    checkWinner();
+  }
+}
+
+function checkWinner() {
+  if (state.status === "finished") return;
+  const p1 = state.players.P1, p2 = state.players.P2;
+  if (p1.hp <= 0 && p2.hp <= 0) { state.status = "finished"; state.winner = "DRAW"; addLog("引き分け（DRAW）！"); }
+  else if (p1.hp <= 0) { state.status = "finished"; state.winner = "P2"; addLog(`${p2.name} の勝利！`); }
+  else if (p2.hp <= 0) { state.status = "finished"; state.winner = "P1"; addLog(`${p1.name} の勝利！`); }
+}
+
+function endTurn() {
+  if (state.status !== "playing") return;
+  state.turn = state.turn === "P1" ? "P2" : "P1";
+  if (state.turn === "P1") state.round++;
+  const active = state.players[state.turn];
+  if (active.skipNextTurn) {
+    active.skipNextTurn = false;
+    addLog(`${active.name} はターンスキップされた！`);
+    endTurn();
+    return;
+  }
+  active.cost += CONFIG.costRecovery;
+  if (active.skipNextDraw) { active.skipNextDraw = false; addLog(`${active.name} のドロー操作により、今回のターン開始ドローは不発！`); }
+  else addCardToHand(active, generateRandomCard(null));
+  active.effects = (active.effects || []).filter((ef) => {
+    if (state.status === "finished") return false;
+    if (ef.action === "continuous_damage") { const d = dealDamage(active, ef.value); addLog(`☠ 継続ダメージ（${ef.source}）→ ${active.name} に ${d} ダメージ`); }
+    else if (ef.action === "continuous_heal") { const h = healPlayer(active, ef.value); addLog(`💚 継続回復（${ef.source}）→ ${active.name} のHP ${h} 回復`); }
+    ef.remaining--;
+    return ef.remaining > 0;
+  });
+  checkWinner();
+}
+
+function processAction(slot, action) {
+  if (state.status !== "playing" || state.turn !== slot || state.pending) return;
+  const player = state.players[slot];
+  if (action.type === "use_card") {
+    const idx = player.hand.findIndex((c) => c.id === action.cardId);
+    if (idx === -1) return;
+    const card = player.hand[idx];
+    if (!card.treasure && player.cost < card.cost) return;
+    if (!card.treasure) player.cost -= card.cost;
+    player.hand.splice(idx, 1);
+    // 出したカードを画面の真ん中に見せてから、少し待って効果を実行する
+    const combo = (card.effects || []).some((e) => (e.requires && e.action !== "unless_has_self_dmg" && hasCardName(player, e.requires)) || (e.pair && hasCardName(player, e.pair)));
+    const pid = uid();
+    state.pending = { id: pid, card, ownerSlot: slot, ownerName: player.name, combo };
+    addLog(`${player.name} が「${card.name}」を出した！`);
+    syncState(); renderBattle();
+    setTimeout(() => {
+      if (!state.pending || state.pending.id !== pid) return;
+      state.pending = null;
+      executeCard(card, slot);
+      if (!card.treasure && state.status === "playing") endTurn();
+      afterMutation();
+    }, REVEAL_MS);
+    return;
+  } else if (action.type === "draw_end") {
+    addCardToHand(player, generateRandomCard(null));
+    addLog(`${player.name} が1枚ドローしてターン終了`);
+    endTurn();
+  } else if (action.type === "buy_treasure") {
+    const tier = action.cost === 10 ? 10 : 5;
+    if (player.cost < tier) return;
+    player.cost -= tier;
+    const t = generateRandomCard(tier);
+    if (addCardToHand(player, t)) addLog(`${player.name} が宝物「${t.name}」を獲得！`);
+  } else if (action.type === "end_turn") {
+    addLog(`${player.name} がターンを終了`);
+    endTurn();
+  }
+  afterMutation();
+}
+
+function afterMutation() { syncState(); renderBattle(); scheduleBotTurn(); }
+
+function scheduleBotTurn() {
+  if (net.mode !== "offline") return;
+  if (state.status !== "playing" || state.turn !== "P2") return;
+  const bot = state.players.P2;
+  if (!bot.isBot) return;
+  if (state.pending) return;
+  if (choiceLock) return; // 選択モーダル中は待つ（選択後に再呼び出し）
+  setTimeout(() => {
+    if (choiceLock || state.status !== "playing" || state.turn !== "P2") return;
+    const tCard = bot.hand.find((c) => c.treasure);
+    if (tCard) { processAction("P2", { type: "use_card", cardId: tCard.id }); return; }
+    const playable = bot.hand.filter((c) => !c.treasure && c.cost <= bot.cost && c.name !== "木馬の中の爆弾");
+    if (playable.length > 0) { processAction("P2", { type: "use_card", cardId: playable[Math.floor(Math.random() * playable.length)].id }); return; }
+    if (bot.cost >= 5 && Math.random() < 0.45) { processAction("P2", { type: "buy_treasure", cost: bot.cost >= 10 && Math.random() < 0.4 ? 10 : 5 }); return; }
+    processAction("P2", { type: "draw_end" });
+  }, 650);
+}
+
+function dispatchAction(action) {
+  if (actionLock || state.status !== "playing" || state.pending || choiceLock) return;
+  if (net.role === "guest") {
+    if (!net.connected) return;
+    actionLock = true;
+    sendSignal({ kind: "action", action });
+    setTimeout(() => { actionLock = false; }, 1200);
+  } else {
+    processAction(net.mySlot, action);
+  }
+}
+
+/* ============ RENDER ============ */
+
+/* ===== Haptic Vibration Feedback ===== */
+function triggerHaptic(pattern) {
+  try {
+    if (navigator && typeof navigator.vibrate === "function") {
+      navigator.vibrate(pattern);
+    }
+  } catch {}
+}
+
+/* ===== Damage / Heal Popups ===== */
+let prevHpSnapshot = { P1: null, P2: null };
+let prevStatusSnapshot = "waiting";
+
+function spawnHpPopup(targetSlot, delta, isHeal) {
+  const layer = document.getElementById("hpPopupLayer");
+  if (!layer || !delta) return;
+  const isGuest = net.role === "guest";
+  const selfSlot = isGuest ? "P2" : "P1";
+  const podId = targetSlot === selfSlot ? "selfPod" : "oppPod";
+  const podEl = document.getElementById(podId);
+  const rect = podEl ? podEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 200, height: 60 };
+
+  const el = document.createElement("div");
+  el.className = `floating-pop ${isHeal ? "heal" : "damage"}`;
+  const jitterX = (Math.random() - 0.5) * 44;
+  el.style.left = `${rect.left + rect.width * 0.68 + jitterX}px`;
+  el.style.top = `${rect.top + rect.height * 0.45}px`;
+  el.textContent = isHeal ? `+${delta} HP` : `-${delta}`;
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
+function checkAndShowHpPopups() {
+  if (state.status !== "playing" && state.status !== "finished") {
+    prevHpSnapshot = { P1: null, P2: null };
+    prevStatusSnapshot = state.status;
+    return;
+  }
+  if (prevStatusSnapshot !== "playing" && state.status === "playing" && state.round === 1 && prevHpSnapshot.P1 === null) {
+    prevHpSnapshot = { P1: state.players.P1.hp, P2: state.players.P2.hp };
+    prevStatusSnapshot = state.status;
+    return;
+  }
+  for (const slot of ["P1", "P2"]) {
+    const curHp = state.players[slot].hp;
+    const prevHp = prevHpSnapshot[slot];
+    if (typeof prevHp === "number" && curHp !== prevHp) {
+      const diff = curHp - prevHp;
+      if (diff < 0) {
+        spawnHpPopup(slot, Math.abs(diff), false);
+        triggerHaptic(slot === net.mySlot ? [60, 30, 80] : 35);
+      } else if (diff > 0) {
+        spawnHpPopup(slot, diff, true);
+        triggerHaptic(22);
+      }
+    }
+    prevHpSnapshot[slot] = curHp;
+  }
+  prevStatusSnapshot = state.status;
+}
+
+/* ===== Long-Press Card Zoom ===== */
+let longPressTimer = 0;
+let longPressActive = false;
+
+function openLongPressCard(card, isComboReady) {
+  const ov = document.getElementById("longpressOverlay");
+  const wrap = document.getElementById("longpressCardWrap");
+  if (!ov || !wrap || !card) return;
+  wrap.innerHTML = "";
+  const preview = buildCardElement(card, true, isComboReady);
+  preview.classList.remove("disabled");
+  wrap.appendChild(preview);
+  ov.classList.add("open");
+  longPressActive = true;
+  triggerHaptic(28);
+}
+
+function closeLongPressCard() {
+  const ov = document.getElementById("longpressOverlay");
+  if (ov) ov.classList.remove("open");
+  longPressActive = false;
+}
+
+function attachLongPressToCard(cardEl, card, isComboReady) {
+  const startPress = () => {
+    clearTimeout(longPressTimer);
+    longPressTimer = setTimeout(() => {
+      openLongPressCard(card, isComboReady);
+    }, 420);
+  };
+  const cancelPress = () => {
+    clearTimeout(longPressTimer);
+    if (longPressActive) closeLongPressCard();
+  };
+  cardEl.addEventListener("pointerdown", startPress);
+  cardEl.addEventListener("pointerup", cancelPress);
+  cardEl.addEventListener("pointercancel", cancelPress);
+  cardEl.addEventListener("pointerleave", () => {
+    clearTimeout(longPressTimer);
+  });
+}
+
+function buildCardElement(card, clickable, isComboReady = false) {
+  const el = document.createElement("div");
+  el.className = `cute-card rank-${card.rank}${card.treasure ? " treasure-card" : ""}${card.isTag ? " tag-card" : ""}${clickable ? "" : " disabled"}${isComboReady ? " combo-ready" : ""}`;
+  let rankLabel = `RANK ${card.rank}`;
+  if (card.treasure) rankLabel = `宝物/${card.rank}`;
+  else if (card.isTag) rankLabel = isComboReady ? `🔥タッグ成立!` : `タッグ/${card.rank}`;
+  else if (isComboReady) rankLabel = `🔥セット/${card.rank}`;
+  const costLabel = card.treasure ? "★0" : `⭐${card.cost}`;
+  el.innerHTML = `
+    <div class="card-top-block">
+      <div class="card-meta-row"><span class="card-rank-tag">${rankLabel}</span><span class="card-cost">${costLabel}</span></div>
+      <div class="card-title">${card.isTag ? `<span class="tag-pill">タッグ</span>` : ""}${esc(card.name)}</div>
+    </div>
+    <div class="card-art">${buildCardArtSVG(card.art)}</div>
+    <div class="card-desc">${esc(card.description)}</div>
+    <div class="card-gloss-sheen"></div>`;
+  return el;
+}
+
+/* ============ 3D HAND CAROUSEL ============ */
+const handOuter = document.getElementById("handScrollOuter");
+const CARD_W = 124, CARD_GAP = 14;
+let carouselCenter = 0, carouselRaf = 0;
+function updateCarousel() {
+  carouselRaf = 0;
+  const dock = document.getElementById("handDock");
+  const cards = [...dock.children];
+  if (!cards.length) return;
+  const cw = handOuter.clientWidth;
+  const pad = Math.max(0, Math.round((cw - CARD_W) / 2));
+  if (dock.dataset.pad !== String(pad)) {
+    dock.style.paddingLeft = pad + "px";
+    dock.style.paddingRight = pad + "px";
+    dock.dataset.pad = String(pad);
+  }
+  const view = handOuter.scrollLeft + cw / 2;
+  let best = 0, bestD = Infinity;
+  const step = CARD_W + CARD_GAP;
+  cards.forEach((el, i) => {
+    const d = (el.offsetLeft + el.offsetWidth / 2 - view) / step;
+    const ad = Math.abs(d);
+    if (ad < bestD) { bestD = ad; best = i; }
+    const t = Math.min(1, ad);
+    const scale = 1.32 * (1 - t) + 0.72 * t;
+    const rot = Math.max(-56, Math.min(56, -d * 42));
+    const tz = -Math.min(ad, 3.5) * 64;
+    const liftY = -8 * Math.pow(Math.max(0, 1 - ad), 1.6);
+    el.style.transform = `perspective(920px) translate3d(0, ${liftY.toFixed(1)}px, ${tz}px) rotateY(${rot}deg) scale(${scale.toFixed(3)})`;
+    el.style.zIndex = String(100 - Math.round(ad * 12));
+    const dimFactor = el.dataset.dim === "1" ? 0.62 : 1;
+    el.style.opacity = String(Math.max(0.56, 1 - ad * 0.14) * dimFactor);
+  });
+  carouselCenter = best;
+  cards.forEach((el, i) => el.classList.toggle("is-center", i === best));
+  updatePlayCenterButton();
+  scheduleAutoSnap();
+}
+function scrollCardToCenter(el) {
+  handOuter.scrollTo({ left: el.offsetLeft + el.offsetWidth / 2 - handOuter.clientWidth / 2, behavior: "smooth" });
+}
+handOuter.addEventListener("scroll", () => { if (!carouselRaf) carouselRaf = requestAnimationFrame(updateCarousel); }, { passive: true });
+window.addEventListener("resize", updateCarousel);
+
+/* ============ CARD REVEAL (出したカードを真ん中に表示) ============ */
+let lastRevealId = null;
+function renderReveal() {
+  const ov = document.getElementById("revealOverlay");
+  const p = state.pending;
+  if (!p) {
+    ov.classList.remove("open", "is-combo", "flash-attack", "flash-heal", "flash-magic", "flash-treasure", "flash-special");
+    lastRevealId = null;
+    return;
+  }
+  if (lastRevealId !== p.id) {
+    lastRevealId = p.id;
+    const stage = document.getElementById("revealStage");
+    stage.innerHTML = "";
+    const el = buildCardElement(p.card, false, Boolean(p.combo));
+    el.classList.remove("disabled");
+    el.classList.add("card-3d-spin-in");
+    stage.appendChild(el);
+
+    const isOpp = p.ownerSlot !== net.mySlot;
+    const actorSpan = `<span class="reveal-actor-name">${esc(p.ownerName)}</span>`;
+    document.getElementById("revealLabel").innerHTML = isOpp
+      ? `⚡ 相手 ${actorSpan} のカード発動！`
+      : `✨ ${actorSpan} が使った！`;
+
+    const comboEl = document.getElementById("revealCombo");
+    comboEl.textContent = p.combo ? "🔥 COMBO !!" : "";
+    comboEl.classList.toggle("combo-active", Boolean(p.combo));
+    if (p.combo) {
+      triggerHaptic([45, 25, 45, 25, 90]);
+    } else {
+      triggerHaptic(20);
+    }
+
+    document.getElementById("revealEffect").textContent = p.card.description;
+
+    const flashClass = getCardFlashClass(p.card);
+    ov.classList.remove("flash-attack", "flash-heal", "flash-magic", "flash-treasure", "flash-special", "is-combo");
+    void ov.offsetWidth;
+    if (flashClass) ov.classList.add(flashClass);
+    if (p.combo) ov.classList.add("is-combo");
+  }
+  ov.classList.add("open");
+}
+
+/* ===== 3D Carousel Auto-Snap & Type Flash Helpers (Visual Only) ===== */
+let snapTimer = 0;
+let isProgrammaticSnap = false;
+
+function scheduleAutoSnap() {
+  if (isProgrammaticSnap) return;
+  clearTimeout(snapTimer);
+  snapTimer = setTimeout(() => {
+    const dock = document.getElementById("handDock");
+    if (!dock || !dock.children.length) return;
+    const targetCard = dock.children[carouselCenter];
+    if (!targetCard) return;
+    const targetLeft = targetCard.offsetLeft + targetCard.offsetWidth / 2 - handOuter.clientWidth / 2;
+    if (Math.abs(handOuter.scrollLeft - targetLeft) > 2) {
+      isProgrammaticSnap = true;
+      handOuter.scrollTo({ left: targetLeft, behavior: "smooth" });
+      setTimeout(() => {
+        isProgrammaticSnap = false;
+        if (!carouselRaf) carouselRaf = requestAnimationFrame(updateCarousel);
+      }, 260);
+    }
+  }, 110);
+}
+
+
+function updatePlayCenterButton() {
+  const btn = document.getElementById("playCenterCardBtn");
+  if (!btn) return;
+  const isGuest = net.role === "guest";
+  const selfSlot = isGuest ? "P2" : "P1";
+  const self = state.players[selfSlot];
+  const isMyTurn = state.status === "playing" && state.turn === selfSlot;
+  const canAct = isMyTurn && !state.pending;
+  const card = self && self.hand ? self.hand[carouselCenter] : null;
+  if (!card) {
+    btn.disabled = true;
+    btn.textContent = "手札がありません";
+    return;
+  }
+  const canUse = canAct && (card.treasure || self.cost >= card.cost);
+  btn.disabled = !canUse;
+  if (!isMyTurn && state.status === "playing") {
+    btn.textContent = `⏳ 相手のターン中（${card.name}）`;
+  } else if (!card.treasure && self.cost < card.cost) {
+    btn.textContent = `⭐ コスト不足：「${card.name}」（必要⭐${card.cost}）`;
+  } else {
+    btn.textContent = `✨ 「${card.name}」を使う（${card.treasure ? "★0" : "⭐" + card.cost}）`;
+  }
+}
+
+function getCardFlashClass(card) {
+  if (!card) return "";
+  if (card.treasure) return "flash-treasure";
+  if (card.type === "attack") return "flash-attack";
+  if (card.type === "heal") return "flash-heal";
+  if (card.type === "magic") return "flash-magic";
+  if (card.type === "special") return "flash-special";
+  return "";
+}
+
+
+function renderBattle() {
+  const isGuest = net.role === "guest";
+  const selfSlot = isGuest ? "P2" : "P1";
+  const oppSlot = isGuest ? "P1" : "P2";
+  const self = state.players[selfSlot];
+  const opp = state.players[oppSlot];
+  const isMyTurn = state.status === "playing" && state.turn === selfSlot;
+  const canAct = isMyTurn && !state.pending;
+
+  document.getElementById("oppName").textContent = opp.name;
+  document.getElementById("oppHp").textContent = opp.hp;
+  document.getElementById("oppCost").textContent = opp.cost;
+  const oppFill = document.getElementById("oppHpFill");
+  oppFill.style.width = `${(opp.hp / CONFIG.maxHP) * 100}%`;
+  oppFill.className = "hp-bar-val" + (opp.hp <= 150 ? " low" : "");
+  document.getElementById("oppPod").classList.toggle("active-turn", state.status === "playing" && !isMyTurn);
+  document.getElementById("oppTurnBadge").style.display = (state.status === "playing" && !isMyTurn) ? "inline-block" : "none";
+  renderBuffs("oppBuffs", opp);
+  const oppHandEl = document.getElementById("oppHandCards");
+  oppHandEl.innerHTML = "";
+  for (let i = 0; i < opp.hand.length; i++) { const b = document.createElement("div"); b.className = "mini-back"; oppHandEl.appendChild(b); }
+
+  document.getElementById("selfName").textContent = self.name;
+  document.getElementById("selfHp").textContent = self.hp;
+  document.getElementById("selfCost").textContent = self.cost;
+  document.getElementById("handCountLabel").textContent = self.hand.length;
+  const selfFill = document.getElementById("selfHpFill");
+  selfFill.style.width = `${(self.hp / CONFIG.maxHP) * 100}%`;
+  selfFill.className = "hp-bar-val" + (self.hp <= 150 ? " low" : "");
+  document.getElementById("selfPod").classList.toggle("active-turn", isMyTurn);
+  document.getElementById("selfTurnBadge").style.display = isMyTurn ? "inline-block" : "none";
+  renderBuffs("selfBuffs", self);
+
+  document.getElementById("roundNum").textContent = state.round;
+  const statusText = document.getElementById("turnStatusText");
+  statusText.classList.toggle("is-my-turn", isMyTurn);
+  if (state.status === "finished") statusText.textContent = "バトル終了！";
+  else if (isMyTurn) statusText.textContent = "✨ あなたのターン！ ✨";
+  else statusText.textContent = `${opp.name} のターン...`;
+
+  const slotEl = document.getElementById("lastPlayedSlot");
+  const actorBadge = document.getElementById("lastActorBadge");
+  slotEl.innerHTML = "";
+  if (state.lastPlayed && state.lastPlayed.card) {
+    if (actorBadge) actorBadge.textContent = `▶ ${state.lastPlayed.ownerName}`;
+    slotEl.classList.add("filled");
+    const preview = buildCardElement(state.lastPlayed.card, false);
+    preview.classList.remove("disabled");
+    preview.style.cursor = "default";
+    slotEl.appendChild(preview);
+  } else {
+    if (actorBadge) actorBadge.textContent = "LAST CARD";
+    slotEl.classList.remove("filled");
+    slotEl.innerHTML = "まだカードは<br>ないよ";
+  }
+
+  document.getElementById("drawActionBtn").disabled = !canAct;
+  document.getElementById("endTurnActionBtn").disabled = !canAct;
+  const handFull = self.hand.length >= (CONFIG.maxHand || 10);
+  document.getElementById("treasure5Btn").disabled = !canAct || self.cost < 5 || handFull;
+  document.getElementById("treasure10Btn").disabled = !canAct || self.cost < 10 || handFull;
+
+  const handDock = document.getElementById("handDock");
+  handDock.innerHTML = "";
+  for (const card of self.hand) {
+    const canUse = canAct && (card.treasure || self.cost >= card.cost);
+    const comboReady = Boolean(card.comboTarget && hasCardName(self, card.comboTarget));
+    const cardEl = buildCardElement(card, canUse, comboReady);
+    cardEl.dataset.dim = canUse ? "0" : "1";
+    attachLongPressToCard(cardEl, card, comboReady);
+    cardEl.addEventListener("click", () => {
+      if (longPressActive) return;
+      const idx = [...handDock.children].indexOf(cardEl);
+      if (idx !== carouselCenter) { scrollCardToCenter(cardEl); return; } // 真ん中以外はタップで中央へ
+      if (canUse) {
+        triggerHaptic(18);
+        dispatchAction({ type: "use_card", cardId: card.id }); // 真ん中をタップで出す
+      }
+    });
+    handDock.appendChild(cardEl);
+  }
+  updateCarousel();
+  renderReveal();
+  checkAndShowHpPopups();
+
+  // 修正: ログは相手が入力した名前を含むため、HTMLエスケープして挿入（XSS対策）
+  document.getElementById("logList").innerHTML = state.logs.map((l) => `<div class="log-entry">${esc(l.text)}</div>`).join("");
+
+  const modal = document.getElementById("resultModal");
+  if (state.status === "finished") {
+    modal.classList.add("open");
+    const title = document.getElementById("resultTitle");
+    const desc = document.getElementById("resultDesc");
+    if (state.winner === "DRAW") { title.textContent = "DRAW!"; desc.textContent = "両者同時にHP0！"; }
+    else if (state.winner === selfSlot) { title.textContent = "🎉 YOU WIN! 🎉"; desc.textContent = `${self.name} の勝利！`; }
+    else { title.textContent = "YOU LOSE..."; desc.textContent = `${opp.name} の勝利！`; }
+  } else modal.classList.remove("open");
+}
+
+function renderBuffs(elId, player) {
+  const container = document.getElementById(elId);
+  const list = [];
+  if (player.protected) list.push(`<span class="buff-badge">🛡 ガード有効</span>`);
+  if (player.skipNextTurn) list.push(`<span class="buff-badge">⏭ 次ターン休み</span>`);
+  if (player.skipNextDraw) list.push(`<span class="buff-badge">🚫 次ドロー消失</span>`);
+  for (const ef of player.effects || []) {
+    const label = ef.action === "continuous_damage" ? `☠ 毎T ${ef.value}dmg (残${ef.remaining}T)` : `💚 毎T +${ef.value}HP (残${ef.remaining}T)`;
+    list.push(`<span class="buff-badge">${label}</span>`);
+  }
+  container.innerHTML = list.join("");
+}
+
+/* ============ EVENTS ============ */
+document.getElementById("selectOfflineBtn").addEventListener("click", () => { document.getElementById("onlineLobbyBox").classList.remove("open"); startBattle(true); });
+document.getElementById("selectOnlineBtn").addEventListener("click", () => { document.getElementById("onlineLobbyBox").classList.add("open"); });
+document.getElementById("createRoomBtn").addEventListener("click", () => {
+  const code = Math.random().toString(36).substring(2, 7).toUpperCase();
+  document.getElementById("roomCodeInput").value = code;
+  initRoom(code, "host");
+});
+document.getElementById("joinRoomBtn").addEventListener("click", () => {
+  const code = document.getElementById("roomCodeInput").value.trim().toUpperCase();
+  if (!code) { const s=document.getElementById("lobbyStatus"); if(s) s.textContent="ルームIDを入力してね！"; document.getElementById("roomCodeInput").focus(); return; }
+  initRoom(code, "guest");
+});
+document.getElementById("onlineStartBtn").addEventListener("click", () => startBattle(false));
+document.getElementById("backMenuBtn").addEventListener("click", () => showScreen("menuScreen"));
+document.getElementById("modalMenuBtn").addEventListener("click", () => { document.getElementById("resultModal").classList.remove("open"); showScreen("menuScreen"); });
+document.getElementById("modalRematchBtn").addEventListener("click", () => {
+  if (net.mode === "offline") startBattle(true);
+  else if (net.role === "host") startBattle(false);
+  else sendSignal({ kind: "rematch" });
+});
+document.getElementById("toggleLogBtn").addEventListener("click", () => document.getElementById("logDrawer").classList.toggle("open"));
+document.getElementById("closeLogBtn").addEventListener("click", () => document.getElementById("logDrawer").classList.remove("open"));
+document.getElementById("playCenterCardBtn").addEventListener("click", () => {
+  const isGuest = net.role === "guest";
+  const selfSlot = isGuest ? "P2" : "P1";
+  const self = state.players[selfSlot];
+  const isMyTurn = state.status === "playing" && state.turn === selfSlot;
+  const canAct = isMyTurn && !state.pending;
+  const card = self && self.hand ? self.hand[carouselCenter] : null;
+  if (!card || !canAct) return;
+  if (!card.treasure && self.cost < card.cost) return;
+  dispatchAction({ type: "use_card", cardId: card.id });
+});
+document.getElementById("drawActionBtn").addEventListener("click", () => { triggerHaptic(15); dispatchAction({ type: "draw_end" }) });
+document.getElementById("endTurnActionBtn").addEventListener("click", () => { triggerHaptic(15); dispatchAction({ type: "end_turn" }) });
+document.getElementById("treasure5Btn").addEventListener("click", () => { triggerHaptic(15); dispatchAction({ type: "buy_treasure", cost: 5 }) });
+document.getElementById("treasure10Btn").addEventListener("click", () => { triggerHaptic(15); dispatchAction({ type: "buy_treasure", cost: 10 }) });
+
+/* ============ CARD DEX (カード図鑑) ============ */
+let dexFilter = "all";
+function getAllDexCards() {
+  const normal = CHAOS_CARDS.map((c) => ({ ...c, treasure: false, poolLabel: "通常" }));
+  const t5 = TREASURE_POOL_5.map((c) => ({ ...c, type: "special", cost: 0, treasure: true, poolLabel: "宝物(5)" }));
+  const t10 = TREASURE_POOL_10.map((c) => ({ ...c, type: "special", cost: 0, treasure: true, poolLabel: "SS宝物(10)" }));
+  return [...normal, ...t5, ...t10];
+}
+function renderDex() {
+  const all = getAllDexCards();
+  const q = (document.getElementById("dexSearchInput").value || "").trim().toLowerCase();
+  const filtered = all.filter((c) => {
+    if (dexFilter === "tag" && !c.isTag && !c.comboTarget) return false;
+    if (dexFilter === "treasure" && !c.treasure) return false;
+    if (dexFilter === "SS" && c.rank !== "SS") return false;
+    if (["attack", "heal", "magic", "special"].includes(dexFilter) && c.type !== dexFilter) return false;
+    if (q) {
+      const hay = `${c.name} ${c.description} ${c.comboTarget || ""} ${c.rank}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  document.getElementById("dexCountText").textContent = `(${filtered.length} / ${all.length}種)`;
+  const grid = document.getElementById("dexGrid");
+  grid.innerHTML = "";
+  for (const card of filtered) {
+    const el = buildCardElement(card, true, Boolean(card.comboTarget));
+    el.addEventListener("click", () => openLongPressCard(card, Boolean(card.comboTarget)));
+    grid.appendChild(el);
+  }
+}
+document.getElementById("openDexBtn").addEventListener("click", () => {
+  document.getElementById("dexModal").classList.add("open");
+  renderDex();
+});
+document.getElementById("closeDexBtn").addEventListener("click", () => {
+  document.getElementById("dexModal").classList.remove("open");
+});
+document.getElementById("dexSearchInput").addEventListener("input", renderDex);
+document.getElementById("dexFilters").addEventListener("click", (e) => {
+  const btn = e.target.closest(".dex-filter-btn");
+  if (!btn) return;
+  dexFilter = btn.dataset.filter;
+  document.querySelectorAll(".dex-filter-btn").forEach((b) => b.classList.toggle("active", b === btn));
+  renderDex();
+});
+const dexBadge = document.getElementById("dexTotalBadge");
+if (dexBadge) dexBadge.textContent = String(getAllDexCards().length);
+
+/* ============ 簡易共有：単体HTMLをダウンロード ============ */
+document.getElementById("downloadGameBtn").addEventListener("click", () => {
+  const status = document.getElementById("downloadStatus");
+  try {
+    const root = document.documentElement.cloneNode(true);
+    // 開いているモーダル・ドロワーの状態を閉じた状態に戻す
+    root.querySelectorAll(".open").forEach((el) => el.classList.remove("open"));
+    // 画面はメニューから始まる状態に戻す
+    const menu = root.querySelector("#menuScreen");
+    const battle = root.querySelector("#battleScreen");
+    if (menu) menu.classList.add("active");
+    if (battle) battle.classList.remove("active");
+    // 入力途中の名前・ルームIDはファイルに含めない
+    root.querySelectorAll("input").forEach((inp) => { inp.removeAttribute("value"); inp.value = ""; });
+    // 実行時に作られた blob: のマニフェストリンクはファイルでは無効なので除く（開いた時に作り直される）
+    root.querySelectorAll('link[rel="manifest"]').forEach((l) => l.remove());
+    const statusInClone = root.querySelector("#downloadStatus");
+    if (statusInClone) { statusInClone.classList.remove("show"); statusInClone.textContent = ""; }
+    const html = "<!DOCTYPE html>\n" + root.outerHTML;
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "my-field.html";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    if (status) {
+      status.textContent = "保存できたよ！あとはLINEのトークで「＋」→「ファイル」から my-field.html を送ってね。";
+      status.classList.add("show");
+    }
+    if (typeof triggerHaptic === "function") triggerHaptic(15);
+  } catch (e) {
+    if (status) {
+      status.textContent = "うまく保存できなかった…もう一度ボタンを押してみてね。";
+      status.classList.add("show");
+    }
+  }
+});
+
+</script>
+</body>
+</html>
